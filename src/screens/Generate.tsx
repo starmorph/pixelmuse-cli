@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { Box, Text, useInput } from 'ink'
+import { Box, Text, useApp, useInput } from 'ink'
 import { Select, TextInput, Spinner } from '@inkjs/ui'
 import type { PixelmuseClient } from '../api/client.js'
 import type { Generation, Model, AspectRatio, Style } from '../api/types.js'
 import { pollGeneration } from '../api/polling.js'
-import { imageToBuffer, autoSave, renderImage } from '../lib/image.js'
+import { imageToBuffer, autoSave } from '../lib/image.js'
 import GenerationProgress from '../components/GenerationProgress.js'
-import ImagePreview from '../components/ImagePreview.js'
 import type { Route } from '../hooks/useRouter.js'
 
 type Step = 'prompt' | 'model' | 'options' | 'generating' | 'preview'
@@ -40,6 +39,13 @@ const STYLE_OPTIONS = [
   { label: 'Artistic', value: 'artistic' },
 ]
 
+/** Payload passed to app exit when preview is ready */
+export interface PreviewPayload {
+  type: 'preview'
+  generation: Generation
+  imagePath: string | null
+}
+
 interface Props {
   client: PixelmuseClient
   navigate: (route: Route) => void
@@ -63,6 +69,7 @@ export default function Generate({
   defaultAspectRatio = '1:1',
   defaultStyle = 'none',
 }: Props) {
+  const { exit } = useApp()
   const [step, setStep] = useState<Step>(initialPrompt ? 'model' : 'prompt')
   const [prompt, setPrompt] = useState(initialPrompt ?? '')
   const [model, setModel] = useState<Model>((initialModel ?? defaultModel) as Model)
@@ -73,7 +80,6 @@ export default function Generate({
 
   // Generation state
   const [generation, setGeneration] = useState<Generation | null>(null)
-  const [imagePath, setImagePath] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const [elapsed, setElapsed] = useState(0)
@@ -122,20 +128,25 @@ export default function Generate({
       clearInterval(timer)
       setGeneration(gen)
 
-      // Auto-save and render
+      // Auto-save then exit Ink to render image outside of Ink
+      let imagePath: string | null = null
       if (gen.output?.[0]) {
         const buf = await imageToBuffer(gen.output[0])
-        const path = autoSave(gen.id, buf)
-        setImagePath(path)
+        imagePath = autoSave(gen.id, buf)
       }
 
+      // Exit Ink with preview payload — image will be rendered post-unmount
+      const payload: PreviewPayload = { type: 'preview', generation: gen, imagePath }
+      exit(undefined as never)
+      // Store payload on process for cli.tsx to read
+      ;(globalThis as Record<string, unknown>).__pixelmuse_preview = payload
       setStep('preview')
     } catch (err) {
       clearInterval(timer)
       setError(err instanceof Error ? err.message : 'Generation failed')
       setStep('preview')
     }
-  }, [client, prompt, model, aspectRatio, style])
+  }, [client, prompt, model, aspectRatio, style, exit])
 
   // Auto-trigger generation when step is 'generating'
   useEffect(() => {
@@ -144,21 +155,18 @@ export default function Generate({
     }
   }, [step])
 
-  // Preview keybinds
+  // Preview keybinds (only for error state — success exits Ink)
   useInput(
     (input) => {
       if (step !== 'preview') return
       if (input === 'r') {
         setGeneration(null)
-        setImagePath(null)
         setError(null)
         setProgress(0)
         setElapsed(0)
         setStep('generating')
       } else if (input === 'h') {
         navigate({ screen: 'home' })
-      } else if (input === 'g') {
-        navigate({ screen: 'gallery' })
       }
     },
   )
@@ -208,7 +216,6 @@ export default function Generate({
           options={ASPECT_OPTIONS}
           onChange={(value) => {
             setAspectRatio(value as AspectRatio)
-            // After aspect ratio, go straight to generating (style defaults to none)
             setStep('generating')
           }}
         />
@@ -228,33 +235,11 @@ export default function Generate({
     )
   }
 
-  // Preview step
+  // Preview step — only shown for errors (success exits Ink before reaching here)
   return (
     <Box flexDirection="column" gap={1}>
-      {error ? (
-        <Box flexDirection="column" gap={1}>
-          <Text color="red">Error: {error}</Text>
-          <Text color="gray">[r] retry | [h] home</Text>
-        </Box>
-      ) : (
-        <>
-          {imagePath && <ImagePreview source={imagePath} />}
-          {generation && (
-            <Box flexDirection="column">
-              <Text>
-                Model: <Text bold>{generation.model}</Text> | Credits:{' '}
-                <Text color="green">{generation.credits_charged}</Text>
-              </Text>
-              {imagePath && (
-                <Text color="gray" dimColor>
-                  Saved to {imagePath}
-                </Text>
-              )}
-            </Box>
-          )}
-          <Text color="gray">[r] regenerate | [g] gallery | [h] home</Text>
-        </>
-      )}
+      <Text color="red">Error: {error}</Text>
+      <Text color="gray">[r] retry | [h] home</Text>
     </Box>
   )
 }

@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text } from 'ink'
 import { Spinner } from '@inkjs/ui'
-import { renderImageToStdout } from '../lib/image.js'
+import { execSync } from 'node:child_process'
+import { hasChafa } from '../lib/image.js'
 
 interface Props {
-  /** Path to image file or Buffer */
+  /** Path to image file */
   source: string | Buffer
   width?: number
 }
 
+/** Renders image as ANSI half-block characters inside Ink's layout */
 export default function ImagePreview({ source, width }: Props) {
+  const [ansi, setAnsi] = useState<string | null>(null)
   const [state, setState] = useState<'loading' | 'done' | 'error'>('loading')
 
   useEffect(() => {
-    let cancelled = false
-    renderImageToStdout(source, { width })
-      .then((ok) => {
-        if (!cancelled) setState(ok ? 'done' : 'error')
-      })
-      .catch(() => {
-        if (!cancelled) setState('error')
-      })
-    return () => {
-      cancelled = true
+    if (typeof source !== 'string' || !hasChafa()) {
+      setState('error')
+      return
+    }
+
+    try {
+      const cols = width ?? Math.min(process.stdout.columns ?? 80, 80)
+      const result = execSync(
+        `chafa --format symbols --size ${cols} --animate off "${source}"`,
+        { encoding: 'utf-8', maxBuffer: 10 * 1024 * 1024 },
+      )
+      setAnsi(result)
+      setState('done')
+    } catch {
+      setState('error')
     }
   }, [source, width])
 
@@ -42,6 +50,5 @@ export default function ImagePreview({ source, width }: Props) {
     )
   }
 
-  // Image was rendered directly to stdout, nothing to show in Ink
-  return null
+  return <Text>{ansi}</Text>
 }

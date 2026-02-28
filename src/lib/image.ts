@@ -46,44 +46,18 @@ export function autoSave(id: string, buffer: Buffer): string {
 }
 
 /**
- * Render image directly to stdout, bypassing Ink's layout engine.
- * Clears the screen first so the image gets a clean canvas,
- * then Ink re-renders its UI below the image output.
- * Returns true if rendered, false if no renderer available.
+ * Render image directly to the terminal via stdio: 'inherit'.
+ * Chafa auto-detects the best graphics protocol (kitty, iterm, sixels, symbols).
+ * This MUST be called when Ink is NOT actively rendering (after exit).
  */
-export async function renderImageToStdout(
-  pathOrBuffer: string | Buffer,
-  opts: { width?: number } = {},
-): Promise<boolean> {
-  const cols = opts.width ?? Math.min(process.stdout.columns ?? 80, 80)
+export function renderImageDirect(path: string): boolean {
+  if (!hasChafa()) return false
 
-  // Clear screen so chafa output doesn't overlap Ink UI
-  process.stdout.write('\x1b[2J\x1b[H')
-
-  // Try chafa first
-  if (hasChafa() && typeof pathOrBuffer === 'string') {
-    try {
-      const result = execSync(`chafa --size ${cols} --animate off "${pathOrBuffer}"`, {
-        encoding: 'utf-8',
-        maxBuffer: 10 * 1024 * 1024,
-      })
-      process.stdout.write(result)
-      return true
-    } catch {
-      // fall through
-    }
-  }
-
-  // Fallback: terminal-image
   try {
-    const terminalImage = await import('terminal-image')
-    let result: string
-    if (typeof pathOrBuffer === 'string') {
-      result = await terminalImage.default.file(pathOrBuffer, { width: cols })
-    } else {
-      result = await terminalImage.default.buffer(pathOrBuffer, { width: cols })
-    }
-    process.stdout.write(result)
+    execSync(`chafa --animate off "${path}"`, {
+      stdio: 'inherit',
+      maxBuffer: 10 * 1024 * 1024,
+    })
     return true
   } catch {
     return false
