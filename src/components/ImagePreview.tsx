@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text } from 'ink'
 import { Spinner } from '@inkjs/ui'
-import { renderImage } from '../lib/image.js'
+import { renderImageToStdout } from '../lib/image.js'
 
 interface Props {
   /** Path to image file or Buffer */
@@ -10,32 +10,31 @@ interface Props {
 }
 
 export default function ImagePreview({ source, width }: Props) {
-  const [rendered, setRendered] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [state, setState] = useState<'loading' | 'done' | 'error'>('loading')
 
   useEffect(() => {
     let cancelled = false
-    renderImage(source, { width })
-      .then((result) => {
-        if (!cancelled) setRendered(result)
+    renderImageToStdout(source, { width })
+      .then((ok) => {
+        if (!cancelled) setState(ok ? 'done' : 'error')
       })
-      .catch((err) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Render failed')
+      .catch(() => {
+        if (!cancelled) setState('error')
       })
     return () => {
       cancelled = true
     }
   }, [source, width])
 
-  if (error) {
+  if (state === 'error') {
     return (
       <Box>
-        <Text color="red">[Preview error: {error}]</Text>
+        <Text color="red">[Preview unavailable — install chafa for best results]</Text>
       </Box>
     )
   }
 
-  if (!rendered) {
+  if (state === 'loading') {
     return (
       <Box>
         <Spinner label="Rendering preview..." />
@@ -43,9 +42,6 @@ export default function ImagePreview({ source, width }: Props) {
     )
   }
 
-  return (
-    <Box flexDirection="column">
-      <Text>{rendered}</Text>
-    </Box>
-  )
+  // Image was rendered directly to stdout, nothing to show in Ink
+  return null
 }

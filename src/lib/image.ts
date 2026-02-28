@@ -45,34 +45,42 @@ export function autoSave(id: string, buffer: Buffer): string {
   return path
 }
 
-/** Render image to terminal string using chafa (preferred) or terminal-image (fallback) */
-export async function renderImage(
+/**
+ * Render image directly to stdout, bypassing Ink's layout engine.
+ * Chafa/terminal-image output is raw ANSI which is too large for Ink's <Text>.
+ * Returns true if rendered, false if no renderer available.
+ */
+export async function renderImageToStdout(
   pathOrBuffer: string | Buffer,
   opts: { width?: number } = {},
-): Promise<string> {
-  const cols = opts.width ?? Math.min(process.stdout.columns ?? 80, 100)
+): Promise<boolean> {
+  const cols = opts.width ?? Math.min(process.stdout.columns ?? 80, 80)
 
-  // Try chafa first
+  // Try chafa first (writes directly to stdout via inherited stdio)
   if (hasChafa() && typeof pathOrBuffer === 'string') {
     try {
-      const result = execSync(`chafa --size ${cols} --animate off "${pathOrBuffer}"`, {
-        encoding: 'utf-8',
+      execSync(`chafa --size ${cols} --animate off "${pathOrBuffer}"`, {
+        stdio: ['ignore', 'inherit', 'ignore'],
         maxBuffer: 10 * 1024 * 1024,
       })
-      return result
+      return true
     } catch {
-      // fall through to terminal-image
+      // fall through
     }
   }
 
-  // Fallback: terminal-image
+  // Fallback: terminal-image → write to stdout directly
   try {
     const terminalImage = await import('terminal-image')
+    let result: string
     if (typeof pathOrBuffer === 'string') {
-      return await terminalImage.default.file(pathOrBuffer, { width: cols })
+      result = await terminalImage.default.file(pathOrBuffer, { width: cols })
+    } else {
+      result = await terminalImage.default.buffer(pathOrBuffer, { width: cols })
     }
-    return await terminalImage.default.buffer(pathOrBuffer, { width: cols })
+    process.stdout.write(result + '\n')
+    return true
   } catch {
-    return '[Image preview unavailable — install chafa or terminal-image]'
+    return false
   }
 }
