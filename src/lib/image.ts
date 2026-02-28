@@ -47,7 +47,8 @@ export function autoSave(id: string, buffer: Buffer): string {
 
 /**
  * Render image directly to stdout, bypassing Ink's layout engine.
- * Chafa/terminal-image output is raw ANSI which is too large for Ink's <Text>.
+ * Clears the screen first so the image gets a clean canvas,
+ * then Ink re-renders its UI below the image output.
  * Returns true if rendered, false if no renderer available.
  */
 export async function renderImageToStdout(
@@ -56,20 +57,24 @@ export async function renderImageToStdout(
 ): Promise<boolean> {
   const cols = opts.width ?? Math.min(process.stdout.columns ?? 80, 80)
 
-  // Try chafa first (writes directly to stdout via inherited stdio)
+  // Clear screen so chafa output doesn't overlap Ink UI
+  process.stdout.write('\x1b[2J\x1b[H')
+
+  // Try chafa first
   if (hasChafa() && typeof pathOrBuffer === 'string') {
     try {
-      execSync(`chafa --size ${cols} --animate off "${pathOrBuffer}"`, {
-        stdio: ['ignore', 'inherit', 'ignore'],
+      const result = execSync(`chafa --size ${cols} --animate off "${pathOrBuffer}"`, {
+        encoding: 'utf-8',
         maxBuffer: 10 * 1024 * 1024,
       })
+      process.stdout.write(result)
       return true
     } catch {
       // fall through
     }
   }
 
-  // Fallback: terminal-image → write to stdout directly
+  // Fallback: terminal-image
   try {
     const terminalImage = await import('terminal-image')
     let result: string
@@ -78,7 +83,7 @@ export async function renderImageToStdout(
     } else {
       result = await terminalImage.default.buffer(pathOrBuffer, { width: cols })
     }
-    process.stdout.write(result + '\n')
+    process.stdout.write(result)
     return true
   } catch {
     return false
