@@ -111,7 +111,8 @@ export class PixelmuseClient {
   static async listModels(): Promise<ModelInfo[]> {
     const res = await fetch(`${BASE_URL}/models`)
     if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
-    return (await res.json()) as ModelInfo[]
+    const body = (await res.json()) as { data: ModelInfo[] }
+    return body.data
   }
 
   /** Get a single model by ID */
@@ -125,6 +126,7 @@ export class PixelmuseClient {
   static async listPackages(): Promise<CreditPackage[]> {
     const res = await fetch(`${BASE_URL}/billing/packages`)
     if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
-    return (await res.json()) as CreditPackage[]
+    const body = (await res.json()) as { data: CreditPackage[] }
+    return body.data
   }
 }
