@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
-import { basename, join } from 'node:path'
+import { join } from 'node:path'
 import YAML from 'yaml'
 import { PATHS, ensureDirs } from './config.js'
 
@@ -65,7 +65,8 @@ export function interpolate(prompt: string, vars: Record<string, string>): strin
   return prompt.replace(/\{\{(\w+)\}\}/g, (_, key: string) => vars[key] ?? `{{${key}}}`)
 }
 
-function slugify(name: string): string {
+/** Slugify a name for use as a filename */
+export function slugify(name: string): string {
   return name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')

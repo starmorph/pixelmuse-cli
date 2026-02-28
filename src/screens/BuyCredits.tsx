@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { Select, Spinner } from '@inkjs/ui'
 import open from 'open'
-import { PixelmuseClient } from '../api/client.js'
-import type { CreditPackage } from '../api/types.js'
-import type { PackageName } from '../api/types.js'
+import { PixelmuseClient } from '../core/client.js'
+import type { CreditPackage, PackageName } from '../core/types.js'
 
 interface Props {
   client: PixelmuseClient

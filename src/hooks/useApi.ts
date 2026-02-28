@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { PixelmuseClient } from '../api/client.js'
+import { PixelmuseClient } from '../core/client.js'
 
 /** Create an API client instance from an API key */
 export function useApi(apiKey: string | null): PixelmuseClient | null {

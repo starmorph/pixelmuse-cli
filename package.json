@@ -1,10 +1,11 @@
 {
   "name": "pixelmuse",
-  "version": "0.1.0",
-  "description": "Terminal-native AI image generation CLI powered by Pixelmuse",
+  "version": "0.2.0",
+  "description": "AI image generation CLI powered by Pixelmuse",
   "type": "module",
   "bin": {
-    "pixelmuse": "./dist/cli.js"
+    "pixelmuse": "./dist/cli.js",
+    "pixelmuse-mcp": "./dist/mcp/server.js"
   },
   "files": [
     "dist"
@@ -26,14 +27,17 @@
   "license": "MIT",
   "dependencies": {
     "@inkjs/ui": "^2.0.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "chalk": "^5.4.1",
     "env-paths": "^3.0.0",
     "ink": "^6.0.0",
     "meow": "^13.2.0",
     "open": "^10.1.0",
+    "ora": "^9.3.0",
     "react": "^19.2.4",
     "terminal-image": "^3.0.0",
-    "yaml": "^2.7.0"
+    "yaml": "^2.7.0",
+    "zod": "^4.3.6"
   },
   "optionalDependencies": {
     "keyring-node": "^1.0.1"

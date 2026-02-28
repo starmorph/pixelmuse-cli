@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { Spinner } from '@inkjs/ui'
-import type { PixelmuseClient } from '../api/client.js'
-import type { Account as AccountType, Usage } from '../api/types.js'
+import type { PixelmuseClient } from '../core/client.js'
+import type { Account as AccountType, Usage } from '../core/types.js'
 import type { Route } from '../hooks/useRouter.js'
 
 interface Props {

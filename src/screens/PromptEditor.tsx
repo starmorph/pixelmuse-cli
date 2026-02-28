@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Text } from 'ink'
 import { TextInput } from '@inkjs/ui'
-import { getTemplate, saveTemplate, extractVariables, type PromptTemplate } from '../lib/prompts.js'
+import { getTemplate, saveTemplate, extractVariables, type PromptTemplate } from '../core/prompts.js'
 
 type EditorStep = 'name' | 'description' | 'prompt' | 'tags' | 'done'
 

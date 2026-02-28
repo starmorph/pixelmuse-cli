@@ -1,8 +1,15 @@
 # pixelmuse
 
-Terminal-native AI image generation CLI powered by the [Pixelmuse](https://pixelmuse.studio) API.
+AI image generation from the command line, powered by the [Pixelmuse](https://pixelmuse.studio) API.
 
-Generate images, browse your gallery, manage prompt templates, and preview results directly in the terminal — built for developers who live in the CLI with tools like Claude Code, Gemini CLI, and Cursor.
+Built for developers who live in the terminal — works standalone, pipes with other tools, and integrates natively with Claude Code, Cursor, and any MCP-compatible AI agent.
+
+```bash
+pixelmuse "astronaut riding a horse"
+# ⚡ Nano Banana 2 · 1 credit (balance: 142) — generating...
+# ✓ Generated in 4.2s · 1 credit charged (remaining: 141)
+#   Saved to ./astronaut-riding-a-horse.png
+```
 
 ## Install
 
@@ -14,88 +21,110 @@ npx pixelmuse
 pnpm add -g pixelmuse
 ```
 
-Requires Node.js 18+. For the best image preview experience, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` on macOS, `apt install chafa` on Linux). Falls back to a built-in renderer if chafa is not available.
+Requires Node.js 18+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/):
+
+```bash
+# macOS
+brew install chafa
+
+# Ubuntu/Debian
+sudo apt install chafa
+```
 
 ## Authentication
 
-Get your API key from [pixelmuse.studio/developers](https://pixelmuse.studio/developers), then either:
+Get your API key from [pixelmuse.studio/developers](https://pixelmuse.studio/developers):
 
 ```bash
-# Set as environment variable (recommended)
+# Option 1: Environment variable (recommended)
 export PIXELMUSE_API_KEY="pm_live_your_key_here"
 
-# Or use the interactive login
+# Option 2: Interactive login (stores in OS keychain or ~/.config/pixelmuse-cli/auth.json)
 pixelmuse login
 ```
 
-Keys are stored securely in your OS keychain when available, with a fallback to `~/.config/pixelmuse-cli/auth.json` (chmod 600).
-
 ## Usage
 
+### Generate images
+
+The default command. Just pass a prompt — everything else has sensible defaults.
+
 ```bash
-# Interactive TUI — full menu with navigation
-pixelmuse
+# Simple generation — saves to current directory
+pixelmuse "a cat floating through space"
 
-# Generate an image
-pixelmuse generate "a cat floating through space, cinematic lighting"
+# Choose model and aspect ratio
+pixelmuse "neon cityscape at night" -m nano-banana-pro -a 16:9
 
-# Generate with specific options
-pixelmuse generate "neon cityscape at night" -m nano-banana-2 -a 16:9
+# Save to specific path
+pixelmuse "app icon, minimal" -o icon.png
 
-# Browse your generations
-pixelmuse gallery
+# Apply a style
+pixelmuse "mountain landscape" -s anime -a 21:9
 
-# View available models
-pixelmuse models
+# Pipe prompt from stdin
+echo "hero banner for SaaS landing page" | pixelmuse -o hero.png
+cat prompt.txt | pixelmuse -m recraft-v4
 
-# Manage prompt templates
-pixelmuse prompts
+# JSON output for scripting
+pixelmuse --json "logo concept" | jq .output_path
 
-# View account info and usage
-pixelmuse account
+# Skip preview, copy to clipboard
+pixelmuse "avatar" --no-preview --clipboard
+
+# Open result in system viewer
+pixelmuse "wallpaper" -a 16:9 --open
 ```
 
-### Commands
+### Watch mode
 
-| Command | Description |
-|---------|-------------|
-| `pixelmuse` | Interactive TUI (home screen) |
-| `pixelmuse generate <prompt>` | Generate an image |
-| `pixelmuse gallery` | Browse your generations |
-| `pixelmuse models` | View available models |
-| `pixelmuse prompts` | Manage prompt templates |
-| `pixelmuse account` | Account info & credits |
-| `pixelmuse login` | Authenticate with API key |
-| `pixelmuse logout` | Remove stored credentials |
+Regenerates automatically when a prompt file changes — ideal for iterating on prompts in your editor.
 
-### Flags
+```bash
+pixelmuse --watch prompt.txt -o output.png
+# Watching prompt.txt for changes... (Ctrl+C to stop)
+# [12:34:01] ✓ Saved to output.png (4.1s)
+# [12:34:22] ✓ Saved to output.png (3.8s)  ← prompt file changed
+```
 
-| Flag | Description |
-|------|-------------|
-| `-m, --model` | Model ID (e.g. `nano-banana-2`) |
-| `-a, --aspect-ratio` | Aspect ratio (e.g. `16:9`, `1:1`, `9:16`) |
-| `-s, --style` | Style: `realistic`, `anime`, `artistic`, `none` |
-| `--no-preview` | Skip image preview |
-| `--json` | Output JSON (for scripting) |
+### Browse and manage
 
-## Models
+```bash
+# List available models with costs
+pixelmuse models
 
-| Model | Credits | Best For |
-|-------|---------|----------|
-| **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
-| Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
-| Flux Schnell | 1 | Quick mockups, ideation |
-| Google Imagen 3 | 1 | Realistic photos, complex compositions |
-| Ideogram v3 Turbo | 1 | Text rendering, graphic design |
-| Recraft V4 | 1 | Typography, design, composition |
-| Recraft V4 Pro | 3 | High-res design, art direction |
+# View account balance and usage
+pixelmuse account
 
-## Prompt Templates
+# Recent generations
+pixelmuse history
 
-Save reusable prompts with variables:
+# Open a generation in your system image viewer
+pixelmuse open <generation-id>
+```
+
+### Prompt templates
+
+Save reusable prompts as YAML files with variables and default settings.
+
+```bash
+# Scaffold a new template
+pixelmuse template init product-shot
+
+# List all templates
+pixelmuse template list
+
+# View template contents
+pixelmuse template show blog-thumbnail
+
+# Generate with a template, overriding variables
+pixelmuse template use blog-thumbnail --var subject="React hooks guide"
+```
+
+Templates are stored at `~/.config/pixelmuse-cli/prompts/`:
 
 ```yaml
-# ~/.config/pixelmuse-cli/prompts/blog-thumbnail.yaml
+# blog-thumbnail.yaml
 name: Blog Thumbnail
 description: Dark-themed blog post thumbnail
 prompt: >
@@ -109,18 +138,114 @@ variables:
 tags: [blog, thumbnail, dark]
 ```
 
-Create and manage templates through the interactive `pixelmuse prompts` screen or by editing YAML files directly.
+### Interactive TUI
 
-## Claude Code Skill
+For visual browsing and exploration, launch the full interactive interface:
 
-This repo includes a [Claude Code skill](SKILL.md) that lets Claude generate images on your behalf. Copy `SKILL.md` to `~/.claude/skills/pixelmuse-generate/SKILL.md` to use it globally:
+```bash
+pixelmuse ui
+```
+
+Features a home screen, generation wizard, gallery browser with image previews, prompt template editor, account management, and credit purchases — all navigable with keyboard shortcuts.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `pixelmuse "prompt"` | Generate an image (default command) |
+| `pixelmuse models` | List available models with costs |
+| `pixelmuse account` | Account balance and usage stats |
+| `pixelmuse history` | Recent generations table |
+| `pixelmuse open <id>` | Open a generation in system viewer |
+| `pixelmuse login` | Authenticate with API key |
+| `pixelmuse logout` | Remove stored credentials |
+| `pixelmuse template <cmd>` | Manage prompt templates |
+| `pixelmuse ui` | Launch interactive TUI |
+
+## Flags
+
+| Flag | Description |
+|------|-------------|
+| `-m, --model` | Model ID (default: `nano-banana-2`) |
+| `-a, --aspect-ratio` | Aspect ratio (default: `1:1`) |
+| `-s, --style` | `realistic`, `anime`, `artistic`, `none` |
+| `-o, --output` | Output file path |
+| `--json` | Machine-readable JSON output |
+| `--no-preview` | Skip terminal image preview |
+| `--open` | Open result in system viewer |
+| `--clipboard` | Copy image to clipboard |
+| `--watch <file>` | Watch prompt file, regenerate on save |
+| `--no-save` | Don't save image to disk |
+
+## Models
+
+| Model | Credits | Best For |
+|-------|---------|----------|
+| **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
+| Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
+| Flux Schnell | 1 | Quick mockups, ideation |
+| Google Imagen 3 | 1 | Realistic photos, complex compositions |
+| Ideogram v3 Turbo | 1 | Text rendering, graphic design |
+| Recraft V4 | 1 | Typography, design, composition |
+| Recraft V4 Pro | 3 | High-res design, art direction |
+
+## MCP Server
+
+pixelmuse ships with a built-in [MCP](https://modelcontextprotocol.io) server for native integration with AI coding tools like Claude Code, Cursor, and Windsurf.
+
+### Setup
+
+Add to your MCP client configuration (e.g. `~/.claude/settings.json` for Claude Code):
+
+```json
+{
+  "mcpServers": {
+    "pixelmuse": {
+      "command": "pixelmuse-mcp",
+      "env": {
+        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+If installed locally instead of globally, use the full path:
+
+```json
+{
+  "mcpServers": {
+    "pixelmuse": {
+      "command": "npx",
+      "args": ["pixelmuse-mcp"],
+      "env": {
+        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+### Tools
+
+| Tool | Description |
+|------|-------------|
+| `generate_image` | Generate an image with prompt, model, aspect ratio, style, and output path |
+| `list_models` | List available models with costs and capabilities |
+| `check_balance` | Check account credit balance and plan info |
+
+Once configured, your AI agent can generate images directly:
+
+> "Generate a hero image for my landing page, 16:9, save it to ./public/hero.png"
+
+### Claude Code Skill
+
+This repo also includes a [Claude Code skill](SKILL.md) that works via REST API without MCP. Copy it to use globally:
 
 ```bash
 mkdir -p ~/.claude/skills/pixelmuse-generate
 cp SKILL.md ~/.claude/skills/pixelmuse-generate/SKILL.md
 ```
-
-Then ask Claude: "generate a blog thumbnail of a terminal with code"
 
 ## Configuration
 
@@ -134,7 +259,14 @@ autoPreview: true
 autoSave: true
 ```
 
-Generated images are auto-saved to `~/.local/share/pixelmuse-cli/generations/`.
+### File locations
+
+| Path | Contents |
+|------|----------|
+| `~/.config/pixelmuse-cli/config.yaml` | User settings |
+| `~/.config/pixelmuse-cli/auth.json` | API key (fallback if keychain unavailable) |
+| `~/.config/pixelmuse-cli/prompts/` | Prompt template YAML files |
+| `~/.local/share/pixelmuse-cli/generations/` | Auto-saved generation images |
 
 ## License
 

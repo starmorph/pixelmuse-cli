@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { Spinner } from '@inkjs/ui'
-import { PixelmuseClient } from '../api/client.js'
-import type { ModelInfo } from '../api/types.js'
+import { PixelmuseClient } from '../core/client.js'
+import type { ModelInfo } from '../core/types.js'
 import ModelTable from '../components/ModelTable.js'
 import type { Route } from '../hooks/useRouter.js'
 

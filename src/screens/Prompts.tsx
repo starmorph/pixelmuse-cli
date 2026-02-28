@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { Box, Text, useInput } from 'ink'
-import type { PromptTemplate } from '../lib/prompts.js'
-import { listTemplates, deleteTemplate } from '../lib/prompts.js'
+import { listTemplates, deleteTemplate, type PromptTemplate } from '../core/prompts.js'
 import type { Route } from '../hooks/useRouter.js'
 
 interface Props {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { ConfirmInput, Spinner } from '@inkjs/ui'
-import type { PixelmuseClient } from '../api/client.js'
-import type { Generation } from '../api/types.js'
-import { imageToBuffer, autoSave } from '../lib/image.js'
+import type { PixelmuseClient } from '../core/client.js'
+import type { Generation } from '../core/types.js'
+import { imageToBuffer, autoSave } from '../core/image.js'
 import ImagePreview from '../components/ImagePreview.js'
 import type { Route } from '../hooks/useRouter.js'
 

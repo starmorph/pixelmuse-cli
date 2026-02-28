@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Box, Text } from 'ink'
 import { Spinner } from '@inkjs/ui'
 import { execSync } from 'node:child_process'
-import { hasChafa } from '../lib/image.js'
+import { hasChafa } from '../core/image.js'
 
 interface Props {
   /** Path to image file */

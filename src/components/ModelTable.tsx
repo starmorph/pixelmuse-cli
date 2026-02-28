@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Text } from 'ink'
-import type { ModelInfo } from '../api/types.js'
+import type { ModelInfo } from '../core/types.js'
 
 interface Props {
   models: ModelInfo[]

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Box, Text } from 'ink'
-import type { Account } from '../api/types.js'
+import type { Account } from '../core/types.js'
 
 interface Props {
   account: Account | null

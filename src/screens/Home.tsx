@@ -1,7 +1,7 @@
 import React from 'react'
 import { Box, Text } from 'ink'
 import { Select } from '@inkjs/ui'
-import type { Account } from '../api/types.js'
+import type { Account } from '../core/types.js'
 import type { Route } from '../hooks/useRouter.js'
 
 interface Props {

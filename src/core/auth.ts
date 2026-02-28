@@ -1,5 +1,5 @@
 import { chmodSync, existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs'
-import { PATHS, ensureDirs } from '../lib/config.js'
+import { PATHS, ensureDirs } from './config.js'
 
 const KEY_PATTERN = /^pm_(live|test)_[0-9a-f]{32}$/
 const SERVICE = 'pixelmuse-cli'

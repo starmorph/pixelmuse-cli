@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
-import type { Generation } from '../api/types.js'
+import type { Generation } from '../core/types.js'
 
 interface Props {
   generations: Generation[]

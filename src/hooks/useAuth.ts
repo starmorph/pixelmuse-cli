@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { Account } from '../api/types.js'
-import { PixelmuseClient } from '../api/client.js'
-import { getApiKey, saveApiKey, deleteApiKey, isValidKeyFormat } from '../auth/store.js'
+import type { Account } from '../core/types.js'
+import { PixelmuseClient } from '../core/client.js'
+import { getApiKey, saveApiKey, deleteApiKey, isValidKeyFormat } from '../core/auth.js'
 
 interface AuthState {
   apiKey: string | null

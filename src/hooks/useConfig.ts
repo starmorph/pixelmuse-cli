@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react'
-import { readSettings, writeSettings, type Settings } from '../lib/config.js'
+import { readSettings, writeSettings, type Settings } from '../core/config.js'
 
 export function useConfig() {
   const [settings, setSettings] = useState<Settings>(() => readSettings())
