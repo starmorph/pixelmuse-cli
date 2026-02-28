@@ -1,0 +1,55 @@
+{
+  "name": "pixelmuse",
+  "version": "0.1.0",
+  "description": "Terminal-native AI image generation CLI powered by Pixelmuse",
+  "type": "module",
+  "bin": {
+    "pixelmuse": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/cli.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "cli",
+    "image-generation",
+    "ai",
+    "tui",
+    "terminal",
+    "pixelmuse"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@inkjs/ui": "^2.0.0",
+    "chalk": "^5.4.1",
+    "env-paths": "^3.0.0",
+    "ink": "^6.0.0",
+    "meow": "^13.2.0",
+    "open": "^10.1.0",
+    "react": "^19.2.4",
+    "terminal-image": "^3.0.0",
+    "yaml": "^2.7.0"
+  },
+  "optionalDependencies": {
+    "keyring-node": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "@types/react": "^19.2.14",
+    "tsup": "^8.3.6",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}
