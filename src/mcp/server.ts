@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
-import { PixelmuseClient } from '../core/client.js'
+import { PixelmuseClient, CLI_VERSION } from '../core/client.js'
 import { generateImage } from '../core/generate.js'
 import { getApiKey } from '../core/auth.js'
 import { readSettings } from '../core/config.js'
@@ -28,7 +28,7 @@ async function getClient(): Promise<PixelmuseClient> {
 
 const server = new McpServer({
   name: 'pixelmuse',
-  version: '0.2.0',
+  version: CLI_VERSION,
 })
 
 // ── generate_image tool ────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-export { PixelmuseClient } from './client.js'
+export { PixelmuseClient, CLI_VERSION } from './client.js'
 export { pollGeneration } from './polling.js'
 export { generateImage, type GenerateOptions, type GenerateResult } from './generate.js'
 export { getApiKey, saveApiKey, deleteApiKey, isValidKeyFormat } from './auth.js'

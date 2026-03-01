@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import type {
   Account,
   CheckoutRequest,
@@ -13,7 +14,16 @@ import type {
 } from './types.js'
 import { ApiError } from './types.js'
 
+const require = createRequire(import.meta.url)
+export const CLI_VERSION: string = (require('../../package.json') as { version: string }).version
+
 const BASE_URL = 'https://www.pixelmuse.studio/api/v1'
+
+const CLIENT_HEADERS: Record<string, string> = {
+  'User-Agent': `pixelmuse-cli/${CLI_VERSION}`,
+  'X-Client-Version': CLI_VERSION,
+  'X-Client-Platform': process.platform,
+}
 
 export class PixelmuseClient {
   private apiKey: string
@@ -25,6 +35,7 @@ export class PixelmuseClient {
   private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
     const url = `${BASE_URL}${path}`
     const headers: Record<string, string> = {
+      ...CLIENT_HEADERS,
       Authorization: `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
@@ -109,7 +120,7 @@ export class PixelmuseClient {
 
   /** List all available models */
   static async listModels(): Promise<ModelInfo[]> {
-    const res = await fetch(`${BASE_URL}/models`)
+    const res = await fetch(`${BASE_URL}/models`, { headers: CLIENT_HEADERS })
     if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
     const body = (await res.json()) as { data: ModelInfo[] }
     return body.data
@@ -117,14 +128,14 @@ export class PixelmuseClient {
 
   /** Get a single model by ID */
   static async getModel(id: string): Promise<ModelInfo> {
-    const res = await fetch(`${BASE_URL}/models/${encodeURIComponent(id)}`)
+    const res = await fetch(`${BASE_URL}/models/${encodeURIComponent(id)}`, { headers: CLIENT_HEADERS })
     if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
     return (await res.json()) as ModelInfo
   }
 
   /** List available credit packages */
   static async listPackages(): Promise<CreditPackage[]> {
-    const res = await fetch(`${BASE_URL}/billing/packages`)
+    const res = await fetch(`${BASE_URL}/billing/packages`, { headers: CLIENT_HEADERS })
     if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
     const body = (await res.json()) as { data: CreditPackage[] }
     return body.data
