@@ -11,6 +11,7 @@ import {
   deleteApiKey,
   isValidKeyFormat,
   readSettings,
+  writeSettings,
   renderImageDirect,
   listTemplates,
   getTemplate,
@@ -18,10 +19,15 @@ import {
   interpolate,
   extractVariables,
   slugify,
+  initiateDeviceAuth,
+  pollForToken,
+  detectEditors,
+  configureMcp,
   type Model,
   type AspectRatio,
   type Style,
   type PromptTemplate,
+  type Settings,
   timeAgo,
 } from './core/index.js'
 
@@ -35,6 +41,7 @@ const cli = meow(
     $ echo "prompt" | pixelmuse             Pipe from stdin
 
   ${chalk.bold('Commands')}
+    pixelmuse setup                          First-time setup wizard
     pixelmuse models                         List available models
     pixelmuse account                        View balance & usage
     pixelmuse history                        Recent generations
@@ -417,12 +424,69 @@ async function handleOpen(id: string) {
 
 // ── Login command ──────────────────────────────────────────────────────
 
-async function handleLogin() {
+async function handleLogin(): Promise<string> {
+  console.log(chalk.bold('Pixelmuse Login'))
+  console.log()
+
+  const spinner = ora('Preparing login...').start()
+
+  try {
+    const init = await initiateDeviceAuth()
+    spinner.stop()
+
+    console.log(`  Your code: ${chalk.bold.cyan(init.userCode)}`)
+    console.log()
+    console.log(`  Opening ${chalk.underline(init.verificationUriComplete)}`)
+    console.log(`  ${chalk.gray('Or visit')} ${chalk.underline(init.verificationUri)} ${chalk.gray('and enter the code manually')}`)
+    console.log()
+
+    const { default: open } = await import('open')
+    await open(init.verificationUriComplete)
+
+    const pollSpinner = ora('Waiting for authorization...').start()
+    let dots = 0
+
+    const result = await pollForToken(init.deviceCode, {
+      interval: init.interval,
+      expiresIn: init.expiresIn,
+      onPoll: () => {
+        dots = (dots + 1) % 4
+        pollSpinner.text = `Waiting for authorization${'.'.repeat(dots)}`
+      },
+    })
+
+    await saveApiKey(result.apiKey)
+    pollSpinner.stop()
+
+    const client = new PixelmuseClient(result.apiKey)
+    const account = await client.getAccount()
+    console.log(chalk.green('✓') + ` Authenticated as ${chalk.bold(account.email)} (${chalk.green(`${account.credits.total} credits`)})`)
+
+    return result.apiKey
+  } catch (err) {
+    spinner.stop()
+
+    if (err instanceof Error && !err.message.includes('timed out') && !err.message.includes('denied')) {
+      // Device flow not available — go straight to manual
+      console.log(chalk.gray('Browser login unavailable. Enter your API key manually.'))
+    } else if (err instanceof Error) {
+      console.log(chalk.yellow(err.message))
+    }
+
+    return handleManualLogin()
+  }
+}
+
+async function handleManualLogin(): Promise<string> {
+  console.log()
+  console.log(`  Get your key at: ${chalk.underline('https://www.pixelmuse.studio/settings/api-keys')}`)
+  console.log()
+
   const { createInterface } = await import('node:readline')
   const rl = createInterface({ input: process.stdin, output: process.stdout })
 
   const key = await new Promise<string>((resolve) => {
-    rl.question('API key (from pixelmuse.studio/settings/api-keys): ', (answer) => {
+    rl.question('API key: ', (answer) => {
       rl.close()
       resolve(answer.trim())
     })
@@ -439,10 +503,125 @@ async function handleLogin() {
     const account = await client.getAccount()
     await saveApiKey(key)
     spinner.succeed(`Authenticated as ${chalk.bold(account.email)} (${chalk.green(`${account.credits.total} credits`)})`)
+    return key
   } catch (err) {
     spinner.fail(err instanceof Error ? err.message : 'Authentication failed')
     process.exit(1)
   }
+}
+
+// ── Setup wizard ──────────────────────────────────────────────────────
+
+async function handleSetup() {
+  console.log()
+  console.log(chalk.bold('  Pixelmuse Setup'))
+  console.log(chalk.gray('  AI image generation from the terminal'))
+  console.log()
+
+  // Step 1: Auth
+  const existingKey = await getApiKey()
+  let apiKey: string
+
+  if (existingKey) {
+    const spinner = ora('Checking existing credentials...').start()
+    try {
+      const client = new PixelmuseClient(existingKey)
+      const account = await client.getAccount()
+      spinner.succeed(`Already authenticated as ${chalk.bold(account.email)} (${chalk.green(`${account.credits.total} credits`)})`)
+      apiKey = existingKey
+    } catch {
+      spinner.warn('Existing credentials invalid. Re-authenticating...')
+      apiKey = await handleLogin()
+    }
+  } else {
+    console.log(chalk.bold('Step 1:') + ' Authenticate')
+    console.log()
+    apiKey = await handleLogin()
+  }
+
+  console.log()
+
+  // Step 2: MCP configuration
+  const editors = detectEditors()
+  const available = editors.filter((e) => e.installed)
+
+  if (available.length > 0) {
+    console.log(chalk.bold('Step 2:') + ' MCP Server (AI agent integration)')
+    console.log()
+
+    const { createInterface } = await import('node:readline')
+
+    for (const editor of available) {
+      const rl = createInterface({ input: process.stdin, output: process.stdout })
+      const answer = await new Promise<string>((resolve) => {
+        rl.question(`  Configure ${chalk.bold(editor.name)}? ${chalk.gray('[Y/n]')} `, (a) => {
+          rl.close()
+          resolve(a.trim().toLowerCase())
+        })
+      })
+
+      if (answer === '' || answer === 'y' || answer === 'yes') {
+        configureMcp(editor, apiKey)
+        console.log(chalk.green('  ✓') + ` ${editor.name} MCP configured`)
+      } else {
+        console.log(chalk.gray(`  Skipped ${editor.name}`))
+      }
+    }
+    console.log()
+  }
+
+  // Step 3: Defaults
+  console.log(chalk.bold(available.length > 0 ? 'Step 3:' : 'Step 2:') + ' Defaults')
+  console.log()
+
+  const { createInterface: createRl } = await import('node:readline')
+  const rl = createRl({ input: process.stdin, output: process.stdout })
+  const customize = await new Promise<string>((resolve) => {
+    rl.question(`  Customize default model and settings? ${chalk.gray('[y/N]')} `, (a) => {
+      rl.close()
+      resolve(a.trim().toLowerCase())
+    })
+  })
+
+  if (customize === 'y' || customize === 'yes') {
+    const settings = readSettings()
+    const updated: Partial<Settings> = {}
+
+    const models = ['nano-banana-2', 'nano-banana-pro', 'flux-schnell', 'imagen-3', 'recraft-v4', 'recraft-v4-pro']
+    const aspects = ['1:1', '16:9', '9:16', '4:3', '3:4', '21:9']
+    const styles = ['none', 'realistic', 'anime', 'artistic']
+
+    const pick = async (label: string, options: string[], current: string): Promise<string> => {
+      const { createInterface } = await import('node:readline')
+      const rl2 = createInterface({ input: process.stdin, output: process.stdout })
+      console.log(`  ${label}: ${options.map((o) => (o === current ? chalk.bold.cyan(o) : chalk.gray(o))).join(' | ')}`)
+      const answer = await new Promise<string>((resolve) => {
+        rl2.question(`  Choice ${chalk.gray(`[${current}]`)}: `, (a) => {
+          rl2.close()
+          resolve(a.trim() || current)
+        })
+      })
+      return options.includes(answer) ? answer : current
+    }
+
+    updated.defaultModel = await pick('Model', models, settings.defaultModel)
+    updated.defaultAspectRatio = await pick('Aspect ratio', aspects, settings.defaultAspectRatio)
+    updated.defaultStyle = await pick('Style', styles, settings.defaultStyle)
+
+    writeSettings({ ...settings, ...updated } as Settings)
+    console.log(chalk.green('  ✓') + ' Defaults saved')
+  } else {
+    console.log(chalk.gray('  Using defaults (nano-banana-2, 1:1, no style)'))
+  }
+
+  // Summary
+  console.log()
+  console.log(chalk.green.bold('  Setup complete!'))
+  console.log()
+  console.log(`  Try it: ${chalk.cyan('pixelmuse "a cat floating through space"')}`)
+  console.log(`  TUI:    ${chalk.cyan('pixelmuse ui')}`)
+  console.log(`  Help:   ${chalk.cyan('pixelmuse --help')}`)
+  console.log()
 }
 
 // ── Template commands ──────────────────────────────────────────────────
@@ -583,8 +762,12 @@ async function main() {
       }
       return handleOpen(rest[0])
 
+    case 'setup':
+      return handleSetup()
+
     case 'login':
-      return handleLogin()
+      await handleLogin()
+      return
 
     case 'logout':
       await deleteApiKey()

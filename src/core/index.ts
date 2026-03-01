@@ -34,3 +34,5 @@ export type {
 } from './types.js'
 export { ApiError } from './types.js'
 export { timeAgo } from './utils.js'
+export { initiateDeviceAuth, pollForToken } from './device-auth.js'
+export { detectEditors, configureMcp, type EditorInfo } from './mcp-config.js'

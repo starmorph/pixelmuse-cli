@@ -31,15 +31,12 @@
 
 ## Get Started
 
-The fastest way to start generating images is with npm — one install, one login, and you're creating:
-
 ```bash
 npm install -g pixelmuse
-pixelmuse login
-pixelmuse "a cat floating through space"
+pixelmuse setup
 ```
 
-Sign up at [pixelmuse.studio/sign-up](https://www.pixelmuse.studio/sign-up) — new accounts include **15 free credits**.
+The setup wizard creates your account (opens browser), configures your API key, and optionally sets up the MCP server for Claude Code, Cursor, or Windsurf. New accounts include **15 free credits**.
 
 > Requires Node.js 20+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` / `sudo apt install chafa`).
 
@@ -210,6 +207,7 @@ Pixelmuse ships four interfaces. Pick the one that fits your workflow — they a
 
 | Command | Description |
 |---------|-------------|
+| `pixelmuse setup` | First-time setup wizard (account, MCP, defaults) |
 | `pixelmuse "prompt"` | Generate an image (default command) |
 | `pixelmuse models` | List available models with costs |
 | `pixelmuse account` | Account balance and usage stats |
