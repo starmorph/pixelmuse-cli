@@ -33,3 +33,4 @@ export type {
   CheckoutResponse,
 } from './types.js'
 export { ApiError } from './types.js'
+export { timeAgo } from './utils.js'

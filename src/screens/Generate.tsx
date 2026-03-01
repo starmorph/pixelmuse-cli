@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Box, Text, useApp, useInput } from 'ink'
-import { Select, TextInput, Spinner } from '@inkjs/ui'
+import { Select, TextInput } from '@inkjs/ui'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation, Model, AspectRatio, Style } from '../core/types.js'
 import { pollGeneration } from '../core/polling.js'
@@ -30,13 +30,6 @@ const ASPECT_OPTIONS = [
   { label: '2:3 Portrait', value: '2:3' },
   { label: '4:3 Landscape', value: '4:3' },
   { label: '21:9 Ultrawide', value: '21:9' },
-]
-
-const STYLE_OPTIONS = [
-  { label: 'None (default)', value: 'none' },
-  { label: 'Realistic', value: 'realistic' },
-  { label: 'Anime', value: 'anime' },
-  { label: 'Artistic', value: 'artistic' },
 ]
 
 /** Payload passed to app exit when preview is ready */
@@ -76,7 +69,7 @@ export default function Generate({
   const [aspectRatio, setAspectRatio] = useState<AspectRatio>(
     (initialAspectRatio ?? defaultAspectRatio) as AspectRatio,
   )
-  const [style, setStyle] = useState<Style>((initialStyle ?? defaultStyle) as Style)
+  const [style] = useState<Style>((initialStyle ?? defaultStyle) as Style)
 
   // Generation state
   const [generation, setGeneration] = useState<Generation | null>(null)

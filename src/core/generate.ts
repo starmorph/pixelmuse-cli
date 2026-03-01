@@ -27,8 +27,6 @@ export interface GenerateResult {
   elapsed: number
 }
 
-const GEMINI_MODELS = new Set(['nano-banana-2', 'nano-banana-pro', 'imagen-3'])
-
 /** Resolve output path: explicit -o flag, or cwd + slugified prompt */
 function resolveOutputPath(prompt: string, output?: string): string {
   if (output) return resolve(output)

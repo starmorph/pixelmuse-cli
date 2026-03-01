@@ -1,20 +1,35 @@
 # pixelmuse
 
+[![CI](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml)
+[![Security](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml)
+[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](./LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
+
 AI image generation from the command line, powered by the [Pixelmuse](https://pixelmuse.studio) API.
 
 Built for developers who live in the terminal — works standalone, pipes with other tools, and integrates natively with Claude Code, Cursor, and any MCP-compatible AI agent.
 
 ```bash
 pixelmuse "astronaut riding a horse"
-# ⚡ Nano Banana 2 · 1 credit (balance: 142) — generating...
-# ✓ Generated in 4.2s · 1 credit charged (remaining: 141)
+# Nano Banana 2 · 1 credit (balance: 142) — generating...
+# Generated in 4.2s · 1 credit charged (remaining: 141)
 #   Saved to ./astronaut-riding-a-horse.png
 ```
 
-## Install
+## Getting Started
+
+### 1. Create an account
+
+Sign up at [pixelmuse.studio/signup](https://pixelmuse.studio/signup). New accounts include free credits to get started.
+
+### 2. Get an API key
+
+Generate your API key at [pixelmuse.studio/developers](https://pixelmuse.studio/developers).
+
+### 3. Install
 
 ```bash
-# Run directly (no install)
+# Run directly (no install needed)
 npx pixelmuse
 
 # Or install globally
@@ -31,17 +46,31 @@ brew install chafa
 sudo apt install chafa
 ```
 
-## Authentication
-
-Get your API key from [pixelmuse.studio/developers](https://pixelmuse.studio/developers):
+### 4. Authenticate
 
 ```bash
-# Option 1: Environment variable (recommended)
+# Option 1: Environment variable
 export PIXELMUSE_API_KEY="pm_live_your_key_here"
 
-# Option 2: Interactive login (stores in OS keychain or ~/.config/pixelmuse-cli/auth.json)
+# Option 2: Interactive login (stores in OS keychain or config file)
 pixelmuse login
 ```
+
+### 5. Generate your first image
+
+```bash
+pixelmuse "a cat floating through space"
+```
+
+### Credits
+
+Pixelmuse uses a credit-based system. Each model costs a set number of credits per generation (shown before and after each run). Check your balance anytime:
+
+```bash
+pixelmuse account
+```
+
+Top up credits at [pixelmuse.studio](https://pixelmuse.studio). See the [API docs](https://pixelmuse.studio/docs/api) for full pricing details.
 
 ## Usage
 
@@ -83,8 +112,8 @@ Regenerates automatically when a prompt file changes — ideal for iterating on 
 ```bash
 pixelmuse --watch prompt.txt -o output.png
 # Watching prompt.txt for changes... (Ctrl+C to stop)
-# [12:34:01] ✓ Saved to output.png (4.1s)
-# [12:34:22] ✓ Saved to output.png (3.8s)  ← prompt file changed
+# [12:34:01] Saved to output.png (4.1s)
+# [12:34:22] Saved to output.png (3.8s)  <- prompt file changed
 ```
 
 ### Browse and manage
@@ -145,8 +174,6 @@ For visual browsing and exploration, launch the full interactive interface:
 ```bash
 pixelmuse ui
 ```
-
-Features a home screen, generation wizard, gallery browser with image previews, prompt template editor, account management, and credit purchases — all navigable with keyboard shortcuts.
 
 ## Commands
 
@@ -238,15 +265,6 @@ Once configured, your AI agent can generate images directly:
 
 > "Generate a hero image for my landing page, 16:9, save it to ./public/hero.png"
 
-### Claude Code Skill
-
-This repo also includes a [Claude Code skill](SKILL.md) that works via REST API without MCP. Copy it to use globally:
-
-```bash
-mkdir -p ~/.claude/skills/pixelmuse-generate
-cp SKILL.md ~/.claude/skills/pixelmuse-generate/SKILL.md
-```
-
 ## Configuration
 
 Settings are stored at `~/.config/pixelmuse-cli/config.yaml`:
@@ -268,6 +286,17 @@ autoSave: true
 | `~/.config/pixelmuse-cli/prompts/` | Prompt template YAML files |
 | `~/.local/share/pixelmuse-cli/generations/` | Auto-saved generation images |
 
+## Links
+
+- [Pixelmuse](https://pixelmuse.studio) — Platform home
+- [Sign up](https://pixelmuse.studio/signup) — Create an account
+- [API keys](https://pixelmuse.studio/developers) — Manage API keys
+- [API docs](https://pixelmuse.studio/docs/api) — Full API reference
+
 ## License
 
-MIT
+Business Source License 1.1 (BSL 1.1). See [LICENSE](./LICENSE) for details.
+
+Free for any use except offering a competing image generation API or platform. Converts to MIT on 2030-03-01.
+
+Copyright 2025 StarMorph LLC.

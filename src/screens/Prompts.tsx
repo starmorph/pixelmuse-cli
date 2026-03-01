@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { listTemplates, deleteTemplate, type PromptTemplate } from '../core/prompts.js'
 import type { Route } from '../hooks/useRouter.js'

@@ -7,10 +7,10 @@ type EditorStep = 'name' | 'description' | 'prompt' | 'tags' | 'done'
 
 interface Props {
   existingName?: string
-  onDone: () => void
+  onDone?: () => void
 }
 
-export default function PromptEditor({ existingName, onDone }: Props) {
+export default function PromptEditor({ existingName, onDone: _onDone }: Props) {
   const existing = existingName ? getTemplate(existingName) : null
 
   const [step, setStep] = useState<EditorStep>(existing ? 'prompt' : 'name')

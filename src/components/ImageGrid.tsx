@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Box, Text, useInput } from 'ink'
 import type { Generation } from '../core/types.js'
 
