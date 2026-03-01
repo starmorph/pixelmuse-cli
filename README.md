@@ -29,19 +29,17 @@
 - **Built for developer workflows.** Pipe from stdin, JSON output for scripting, watch mode for prompt iteration, MCP server for AI agents.
 - **Predictable credit pricing.** 1-3 credits per generation, no surprises. Free credits on signup.
 
-## Install
+## Get Started
+
+The fastest way to start generating images is with npm — one install, one login, and you're creating:
 
 ```bash
 npm install -g pixelmuse
-```
-
-Then authenticate:
-
-```bash
 pixelmuse login
+pixelmuse "a cat floating through space"
 ```
 
-Sign up at [pixelmuse.studio/sign-up](https://www.pixelmuse.studio/sign-up) — new accounts include free credits.
+Sign up at [pixelmuse.studio/sign-up](https://www.pixelmuse.studio/sign-up) — new accounts include **15 free credits**.
 
 > Requires Node.js 20+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` / `sudo apt install chafa`).
 
@@ -269,6 +267,6 @@ autoSave: true
 
 Business Source License 1.1 (BSL 1.1). See [LICENSE](./LICENSE) for details.
 
-Free for any use except offering a competing image generation API or platform. Converts to MIT on 2030-03-01.
+Free for any use except offering a competing image generation API or platform. Converts to GPL-2.0 on 2029-03-01.
 
 Copyright 2025 StarMorph LLC.

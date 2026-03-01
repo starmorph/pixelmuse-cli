@@ -5,7 +5,7 @@
   "homepage": "https://pixelmuse.studio",
   "repository": {
     "type": "git",
-    "url": "https://github.com/starmorph/pixelmuse-cli.git"
+    "url": "git+https://github.com/starmorph/pixelmuse-cli.git"
   },
   "bugs": {
     "url": "https://github.com/starmorph/pixelmuse-cli/issues"
@@ -13,8 +13,8 @@
   "author": "StarMorph LLC",
   "type": "module",
   "bin": {
-    "pixelmuse": "./dist/cli.js",
-    "pixelmuse-mcp": "./dist/mcp/server.js"
+    "pixelmuse": "dist/cli.js",
+    "pixelmuse-mcp": "dist/mcp/server.js"
   },
   "files": [
     "dist"
