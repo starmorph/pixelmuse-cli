@@ -24,43 +24,120 @@ Sign up at [pixelmuse.studio/signup](https://pixelmuse.studio/signup). New accou
 
 ### 2. Get an API key
 
-Generate your API key at [pixelmuse.studio/developers](https://pixelmuse.studio/developers).
+Generate your API key at [pixelmuse.studio/developers](https://pixelmuse.studio/developers). Keys start with `pm_live_`.
 
-### 3. Install
+### 3. Choose your setup
+
+Pick the setup that matches how you work. All three use the same API key.
+
+---
+
+#### CLI
+
+Install globally and authenticate:
 
 ```bash
-# Run directly (no install needed)
-npx pixelmuse
-
-# Or install globally
 pnpm add -g pixelmuse
-```
-
-Requires Node.js 18+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/):
-
-```bash
-# macOS
-brew install chafa
-
-# Ubuntu/Debian
-sudo apt install chafa
-```
-
-### 4. Authenticate
-
-```bash
-# Option 1: Environment variable
-export PIXELMUSE_API_KEY="pm_live_your_key_here"
-
-# Option 2: Interactive login (stores in OS keychain or config file)
 pixelmuse login
 ```
 
-### 5. Generate your first image
+Or use an environment variable:
+
+```bash
+export PIXELMUSE_API_KEY="pm_live_your_key_here"
+```
+
+Generate your first image:
 
 ```bash
 pixelmuse "a cat floating through space"
 ```
+
+Requires Node.js 18+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` on macOS, `sudo apt install chafa` on Ubuntu).
+
+---
+
+#### MCP Server (Claude Code, Cursor, Windsurf)
+
+The MCP server lets AI agents generate images, list models, and check your balance directly — no manual CLI steps needed.
+
+**Claude Code**
+
+Add to `~/.claude/.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "pixelmuse": {
+      "command": "npx",
+      "args": ["-y", "pixelmuse-mcp"],
+      "env": {
+        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+If you installed globally, you can use the binary directly:
+
+```json
+{
+  "mcpServers": {
+    "pixelmuse": {
+      "command": "pixelmuse-mcp",
+      "env": {
+        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Code. The agent now has access to three tools:
+
+| Tool | What it does |
+|------|-------------|
+| `generate_image` | Generate an image from a prompt. Accepts model, aspect ratio, style, and output path. |
+| `list_models` | List all available models with credit costs and strengths. |
+| `check_balance` | Check your credit balance and plan info. |
+
+**Example prompts you can give Claude:**
+
+- "Generate a hero image for my landing page, 16:9, save it to `./public/hero.png`"
+- "Create a blog thumbnail about React hooks using the anime style"
+- "Make me an app icon, 1:1, save to `./assets/icon.png`"
+- "What models are available and how much do they cost?"
+- "Check my Pixelmuse credit balance"
+
+**Cursor / Windsurf**
+
+Add to your MCP settings (Settings > MCP Servers):
+
+```json
+{
+  "pixelmuse": {
+    "command": "npx",
+    "args": ["-y", "pixelmuse-mcp"],
+    "env": {
+      "PIXELMUSE_API_KEY": "pm_live_your_key_here"
+    }
+  }
+}
+```
+
+---
+
+#### Interactive TUI
+
+For visual browsing, generation wizards, gallery, and account management:
+
+```bash
+pnpm add -g pixelmuse
+pixelmuse ui
+```
+
+---
 
 ### Credits
 
@@ -72,7 +149,7 @@ pixelmuse account
 
 Top up credits at [pixelmuse.studio](https://pixelmuse.studio). See the [API docs](https://pixelmuse.studio/docs/api) for full pricing details.
 
-## Usage
+## CLI Reference
 
 ### Generate images
 
@@ -132,7 +209,48 @@ pixelmuse history
 pixelmuse open <generation-id>
 ```
 
-### Prompt templates
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `pixelmuse "prompt"` | Generate an image (default command) |
+| `pixelmuse models` | List available models with costs |
+| `pixelmuse account` | Account balance and usage stats |
+| `pixelmuse history` | Recent generations table |
+| `pixelmuse open <id>` | Open a generation in system viewer |
+| `pixelmuse login` | Authenticate with API key |
+| `pixelmuse logout` | Remove stored credentials |
+| `pixelmuse template <cmd>` | Manage prompt templates |
+| `pixelmuse ui` | Launch interactive TUI |
+
+### Flags
+
+| Flag | Description |
+|------|-------------|
+| `-m, --model` | Model ID (default: `nano-banana-2`) |
+| `-a, --aspect-ratio` | Aspect ratio (default: `1:1`) |
+| `-s, --style` | `realistic`, `anime`, `artistic`, `none` |
+| `-o, --output` | Output file path |
+| `--json` | Machine-readable JSON output |
+| `--no-preview` | Skip terminal image preview |
+| `--open` | Open result in system viewer |
+| `--clipboard` | Copy image to clipboard |
+| `--watch <file>` | Watch prompt file, regenerate on save |
+| `--no-save` | Don't save image to disk |
+
+### Models
+
+| Model | Credits | Best For |
+|-------|---------|----------|
+| **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
+| Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
+| Flux Schnell | 1 | Quick mockups, ideation |
+| Google Imagen 3 | 1 | Realistic photos, complex compositions |
+| Ideogram v3 Turbo | 1 | Text rendering, graphic design |
+| Recraft V4 | 1 | Typography, design, composition |
+| Recraft V4 Pro | 3 | High-res design, art direction |
+
+## Prompt Templates
 
 Save reusable prompts as YAML files with variables and default settings.
 
@@ -166,104 +284,6 @@ variables:
   subject: "code editor with syntax highlighting"
 tags: [blog, thumbnail, dark]
 ```
-
-### Interactive TUI
-
-For visual browsing and exploration, launch the full interactive interface:
-
-```bash
-pixelmuse ui
-```
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `pixelmuse "prompt"` | Generate an image (default command) |
-| `pixelmuse models` | List available models with costs |
-| `pixelmuse account` | Account balance and usage stats |
-| `pixelmuse history` | Recent generations table |
-| `pixelmuse open <id>` | Open a generation in system viewer |
-| `pixelmuse login` | Authenticate with API key |
-| `pixelmuse logout` | Remove stored credentials |
-| `pixelmuse template <cmd>` | Manage prompt templates |
-| `pixelmuse ui` | Launch interactive TUI |
-
-## Flags
-
-| Flag | Description |
-|------|-------------|
-| `-m, --model` | Model ID (default: `nano-banana-2`) |
-| `-a, --aspect-ratio` | Aspect ratio (default: `1:1`) |
-| `-s, --style` | `realistic`, `anime`, `artistic`, `none` |
-| `-o, --output` | Output file path |
-| `--json` | Machine-readable JSON output |
-| `--no-preview` | Skip terminal image preview |
-| `--open` | Open result in system viewer |
-| `--clipboard` | Copy image to clipboard |
-| `--watch <file>` | Watch prompt file, regenerate on save |
-| `--no-save` | Don't save image to disk |
-
-## Models
-
-| Model | Credits | Best For |
-|-------|---------|----------|
-| **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
-| Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
-| Flux Schnell | 1 | Quick mockups, ideation |
-| Google Imagen 3 | 1 | Realistic photos, complex compositions |
-| Ideogram v3 Turbo | 1 | Text rendering, graphic design |
-| Recraft V4 | 1 | Typography, design, composition |
-| Recraft V4 Pro | 3 | High-res design, art direction |
-
-## MCP Server
-
-pixelmuse ships with a built-in [MCP](https://modelcontextprotocol.io) server for native integration with AI coding tools like Claude Code, Cursor, and Windsurf.
-
-### Setup
-
-Add to your MCP client configuration (e.g. `~/.claude/settings.json` for Claude Code):
-
-```json
-{
-  "mcpServers": {
-    "pixelmuse": {
-      "command": "pixelmuse-mcp",
-      "env": {
-        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
-      }
-    }
-  }
-}
-```
-
-If installed locally instead of globally, use the full path:
-
-```json
-{
-  "mcpServers": {
-    "pixelmuse": {
-      "command": "npx",
-      "args": ["pixelmuse-mcp"],
-      "env": {
-        "PIXELMUSE_API_KEY": "pm_live_your_key_here"
-      }
-    }
-  }
-}
-```
-
-### Tools
-
-| Tool | Description |
-|------|-------------|
-| `generate_image` | Generate an image with prompt, model, aspect ratio, style, and output path |
-| `list_models` | List available models with costs and capabilities |
-| `check_balance` | Check account credit balance and plan info |
-
-Once configured, your AI agent can generate images directly:
-
-> "Generate a hero image for my landing page, 16:9, save it to ./public/hero.png"
 
 ## Configuration
 
