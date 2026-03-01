@@ -1,20 +1,55 @@
-# pixelmuse
+<p align="center">
+  <img src="./assets/banner.png" alt="pixelmuse" width="700" />
+</p>
 
-[![CI](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml)
-[![Security](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml)
-[![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](./LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
+<p align="center">
+  <a href="https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml"><img src="https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml"><img src="https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml/badge.svg" alt="Security" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-BSL%201.1-blue.svg" alt="License: BSL 1.1" /></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg" alt="Node.js" /></a>
+</p>
 
-AI image generation from the command line, powered by the [Pixelmuse](https://pixelmuse.studio) API.
+<p align="center">AI image generation from the terminal, powered by the <a href="https://pixelmuse.studio">Pixelmuse</a> API.</p>
 
-Built for developers who live in the terminal — works standalone, pipes with other tools, and integrates natively with Claude Code, Cursor, and any MCP-compatible AI agent.
+---
+
+## Quick Install
+
+Clone the repo, then tell your AI agent to set everything up:
+
+```
+Claude, install the pixelmuse CLI, pixelmuse TUI, pixelmuse MCP server, and pixelmuse Claude skill globally.
+```
+
+Or manually:
 
 ```bash
-pixelmuse "astronaut riding a horse"
-# Nano Banana 2 · 1 credit (balance: 142) — generating...
-# Generated in 4.2s · 1 credit charged (remaining: 141)
-#   Saved to ./astronaut-riding-a-horse.png
+git clone https://github.com/starmorph/pixelmuse-cli.git
+cd pixelmuse-cli
+pnpm install && pnpm build && pnpm link --global
 ```
+
+## Which Interface Should I Use?
+
+Pixelmuse ships four interfaces. Pick the one that fits your workflow — they all use the same API and credentials.
+
+| | **CLI** | **TUI** | **MCP Server** | **Claude Skill** |
+|---|---|---|---|---|
+| **What it is** | Command-line tool | Interactive terminal UI | AI agent tool server | Claude Code prompt template |
+| **Launch** | `pixelmuse "prompt"` | `pixelmuse ui` | Auto-starts with Claude/Cursor | Auto-triggers on keywords |
+| **Best for** | Scripting, automation, CI/CD pipelines | Visual browsing, exploring models, managing account | Letting AI agents generate images for you | Generating images mid-conversation in Claude Code |
+| **Input** | Flags, stdin, pipe, watch mode | Guided wizard with menus | AI decides params from your natural language | Natural language to Claude |
+| **Output** | File on disk + terminal preview | File on disk + inline preview | File on disk + JSON response to agent | File on disk + inline preview |
+| **Requires** | Terminal | Terminal | Claude Code, Cursor, or Windsurf | Claude Code |
+
+**Rule of thumb:**
+- **You type the prompt** → CLI or TUI
+- **AI types the prompt** → MCP Server or Claude Skill
+- **Quick one-off** → CLI
+- **Browsing/exploring** → TUI
+- **Part of a coding task** ("generate a hero image for this landing page") → MCP Server
+
+---
 
 ## Getting Started
 
@@ -28,7 +63,7 @@ Generate your API key at [pixelmuse.studio/developers](https://pixelmuse.studio/
 
 ### 3. Choose your setup
 
-Pick the setup that matches how you work. All three use the same API key.
+Pick the setup that matches how you work. All four interfaces use the same API key.
 
 ---
 
