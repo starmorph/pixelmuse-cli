@@ -16,7 +16,7 @@ Generate images via the Pixelmuse REST API at `https://www.pixelmuse.studio/api/
 
 The API key must be set as the `PIXELMUSE_API_KEY` environment variable. Keys start with `pm_live_` or `pm_test_`.
 
-**Setup:** Get your API key from [pixelmuse.studio/developers](https://pixelmuse.studio/developers), then add it to your shell profile:
+**Setup:** Get your API key from [pixelmuse.studio/settings/api-keys](https://pixelmuse.studio/settings/api-keys), then add it to your shell profile:
 
 ```bash
 export PIXELMUSE_API_KEY="pm_live_your_key_here"
@@ -36,7 +36,7 @@ if [ -z "$API_KEY" ]; then
 fi
 ```
 
-If no key is found, ask the user to set `PIXELMUSE_API_KEY`. They can get one at [pixelmuse.studio/developers](https://pixelmuse.studio/developers).
+If no key is found, ask the user to set `PIXELMUSE_API_KEY`. They can get one at [pixelmuse.studio/settings/api-keys](https://pixelmuse.studio/settings/api-keys).
 
 ## Available Models
 

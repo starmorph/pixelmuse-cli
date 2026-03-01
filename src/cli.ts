@@ -422,7 +422,7 @@ async function handleLogin() {
   const rl = createInterface({ input: process.stdin, output: process.stdout })
 
   const key = await new Promise<string>((resolve) => {
-    rl.question('API key (from pixelmuse.studio/developers): ', (answer) => {
+    rl.question('API key (from pixelmuse.studio/settings/api-keys): ', (answer) => {
       rl.close()
       resolve(answer.trim())
     })

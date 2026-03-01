@@ -34,7 +34,7 @@ export default function Login({ onLogin, onSuccess }: Props) {
       <Text color="gray">
         Get your key at{' '}
         <Text color="cyan" underline>
-          pixelmuse.studio/developers
+          pixelmuse.studio/settings/api-keys
         </Text>
       </Text>
 

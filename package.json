@@ -1,7 +1,16 @@
 {
   "name": "pixelmuse",
   "version": "0.2.0",
-  "description": "AI image generation CLI powered by Pixelmuse",
+  "description": "AI image generation from the terminal — CLI, TUI, and MCP server for text-to-image with Flux, Imagen, Recraft, and more",
+  "homepage": "https://pixelmuse.studio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/starmorph/pixelmuse-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/starmorph/pixelmuse-cli/issues"
+  },
+  "author": "StarMorph LLC",
   "type": "module",
   "bin": {
     "pixelmuse": "./dist/cli.js",
@@ -27,7 +36,21 @@
     "ai",
     "tui",
     "terminal",
-    "pixelmuse"
+    "pixelmuse",
+    "text-to-image",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude",
+    "ai-art",
+    "flux",
+    "imagen",
+    "recraft",
+    "stable-diffusion",
+    "generative-ai",
+    "creative-tools",
+    "developer-tools",
+    "api-client"
   ],
   "license": "BUSL-1.1",
   "dependencies": {
