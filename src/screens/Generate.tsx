@@ -14,11 +14,11 @@ const GEMINI_MODELS = new Set(['nano-banana-2', 'nano-banana-pro', 'imagen-3'])
 
 const MODEL_OPTIONS = [
   { label: 'Nano Banana 2 (1 credit, fast)', value: 'nano-banana-2' },
-  { label: 'Nano Banana Pro (3 credits)', value: 'nano-banana-pro' },
+  { label: 'Nano Banana Pro (4 credits)', value: 'nano-banana-pro' },
   { label: 'Flux Schnell (1 credit)', value: 'flux-schnell' },
   { label: 'Google Imagen 3 (1 credit)', value: 'imagen-3' },
   { label: 'Recraft V4 (1 credit)', value: 'recraft-v4' },
-  { label: 'Recraft V4 Pro (3 credits)', value: 'recraft-v4-pro' },
+  { label: 'Recraft V4 Pro (7 credits)', value: 'recraft-v4-pro' },
 ]
 
 const ASPECT_OPTIONS = [

@@ -24,7 +24,7 @@ export type AspectRatio =
 
 export type GenerationStatus = 'pending' | 'processing' | 'succeeded' | 'failed'
 
-export type PackageName = 'try_it_out' | 'starter' | 'creator' | 'pro'
+export type PackageName = 'credit_pack'
 
 // ── Request types ──────────────────────────────────────────────────────
 

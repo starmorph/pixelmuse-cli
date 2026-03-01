@@ -200,11 +200,11 @@ Pixelmuse ships four interfaces. Pick the one that fits your workflow — they a
 | Model | Credits | Best For |
 |-------|---------|----------|
 | **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
-| Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
+| Nano Banana Pro | 4 | Text rendering, real-time info, multi-image editing |
 | Flux Schnell | 1 | Quick mockups, ideation |
 | Google Imagen 3 | 1 | Realistic photos, complex compositions |
 | Recraft V4 | 1 | Typography, design, composition |
-| Recraft V4 Pro | 3 | High-res design, art direction |
+| Recraft V4 Pro | 7 | High-res design, art direction |
 
 ## CLI Reference
 

@@ -43,11 +43,11 @@ If no key is found, ask the user to set `PIXELMUSE_API_KEY`. They can get one at
 | Model ID | Name | Credits | Provider | Best For |
 |----------|------|---------|----------|----------|
 | `nano-banana-2` | Nano Banana 2 | 1 | Gemini | Speed, text rendering, world knowledge (DEFAULT) |
-| `nano-banana-pro` | Nano Banana Pro | 3 | Gemini | Text rendering, real-time info, multi-image editing |
+| `nano-banana-pro` | Nano Banana Pro | 4 | Gemini | Text rendering, real-time info, multi-image editing |
 | `flux-schnell` | Flux Schnell | 1 | Replicate | Quick mockups, ideation |
 | `imagen-3` | Google Imagen 3 | 1 | Gemini | Realistic photos, complex compositions |
 | `recraft-v4` | Recraft V4 | 1 | Replicate | Typography, design, composition |
-| `recraft-v4-pro` | Recraft V4 Pro | 3 | Replicate | High-res design, art direction |
+| `recraft-v4-pro` | Recraft V4 Pro | 7 | Replicate | High-res design, art direction |
 
 **Default model:** `nano-banana-2` (fast, 1 credit, good text rendering)
 
