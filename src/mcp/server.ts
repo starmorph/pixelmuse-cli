@@ -12,7 +12,6 @@ const MODELS = [
   'nano-banana-pro',
   'flux-schnell',
   'imagen-3',
-  'ideogram-v3-turbo',
   'recraft-v4',
   'recraft-v4-pro',
 ] as const

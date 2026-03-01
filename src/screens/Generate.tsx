@@ -17,7 +17,6 @@ const MODEL_OPTIONS = [
   { label: 'Nano Banana Pro (3 credits)', value: 'nano-banana-pro' },
   { label: 'Flux Schnell (1 credit)', value: 'flux-schnell' },
   { label: 'Google Imagen 3 (1 credit)', value: 'imagen-3' },
-  { label: 'Ideogram v3 Turbo (1 credit)', value: 'ideogram-v3-turbo' },
   { label: 'Recraft V4 (1 credit)', value: 'recraft-v4' },
   { label: 'Recraft V4 Pro (3 credits)', value: 'recraft-v4-pro' },
 ]

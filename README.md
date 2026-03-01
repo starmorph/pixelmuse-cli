@@ -246,7 +246,6 @@ pixelmuse open <generation-id>
 | Nano Banana Pro | 3 | Text rendering, real-time info, multi-image editing |
 | Flux Schnell | 1 | Quick mockups, ideation |
 | Google Imagen 3 | 1 | Realistic photos, complex compositions |
-| Ideogram v3 Turbo | 1 | Text rendering, graphic design |
 | Recraft V4 | 1 | Typography, design, composition |
 | Recraft V4 Pro | 3 | High-res design, art direction |
 

@@ -3,7 +3,7 @@ name: pixelmuse-generate
 description: |
   Generate images using the Pixelmuse API. Use when the user says 'generate image', 'create image',
   'pixelmuse', 'generate thumbnail', 'create thumbnail', 'make an image', 'AI image', 'generate art',
-  'nano banana', 'nanobanana', 'flux', 'recraft', 'ideogram', 'imagen', or wants to create any image
+  'nano banana', 'nanobanana', 'flux', 'recraft', 'imagen', or wants to create any image
   using AI image generation. Also use when the user provides a prompt and wants it turned into an image.
 version: 1.1.0
 ---
@@ -46,7 +46,6 @@ If no key is found, ask the user to set `PIXELMUSE_API_KEY`. They can get one at
 | `nano-banana-pro` | Nano Banana Pro | 3 | Gemini | Text rendering, real-time info, multi-image editing |
 | `flux-schnell` | Flux Schnell | 1 | Replicate | Quick mockups, ideation |
 | `imagen-3` | Google Imagen 3 | 1 | Gemini | Realistic photos, complex compositions |
-| `ideogram-v3-turbo` | Ideogram v3 Turbo | 1 | Replicate | Text rendering, graphic design |
 | `recraft-v4` | Recraft V4 | 1 | Replicate | Typography, design, composition |
 | `recraft-v4-pro` | Recraft V4 Pro | 3 | Replicate | High-res design, art direction |
 
@@ -147,7 +146,7 @@ Replace `OUTPUT_PATH.png` with the desired file path.
 
 - Be specific and descriptive. Include style, lighting, composition, and mood.
 - For blog thumbnails: include the topic visually, use dark backgrounds for dev content.
-- For text in images: Nano Banana 2 and Ideogram are best at rendering text accurately.
+- For text in images: Nano Banana 2 is best at rendering text accurately.
 - Avoid prompts that violate content policy (NSFW, violence, real people).
 
 ## Checking Account Balance
@@ -157,7 +156,7 @@ curl -s https://www.pixelmuse.studio/api/v1/account \
   -H "Authorization: Bearer $PIXELMUSE_API_KEY" | python3 -m json.tool
 ```
 
-## Async Models (Replicate — flux, recraft, ideogram)
+## Async Models (Replicate — flux, recraft)
 
 These return `202` with `status: "processing"`. Poll for completion:
 

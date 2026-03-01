@@ -6,7 +6,6 @@ const TYPICAL_DURATIONS: Record<string, number> = {
   'flux-schnell': 12,
   'recraft-v4': 20,
   'recraft-v4-pro': 25,
-  'ideogram-v3-turbo': 15,
 }
 
 interface PollOptions {
