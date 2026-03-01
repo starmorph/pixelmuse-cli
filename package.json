@@ -1,6 +1,6 @@
 {
   "name": "pixelmuse",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "AI image generation from the terminal — CLI, TUI, and MCP server for text-to-image with Flux, Imagen, Recraft, and more",
   "homepage": "https://pixelmuse.studio",
   "repository": {

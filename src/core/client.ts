@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module'
 import type {
   Account,
   CheckoutRequest,
@@ -14,8 +13,7 @@ import type {
 } from './types.js'
 import { ApiError } from './types.js'
 
-const require = createRequire(import.meta.url)
-export const CLI_VERSION: string = (require('../../package.json') as { version: string }).version
+export const CLI_VERSION: string = process.env.CLI_VERSION ?? '0.0.0'
 
 const BASE_URL = 'https://www.pixelmuse.studio/api/v1'
 
