@@ -13,6 +13,12 @@
 
 ---
 
+**[Quick Install](#quick-install)** · **[Which Interface?](#which-interface-should-i-use)** · **[Getting Started](#getting-started)** · **[CLI Reference](#cli-reference)** · **[Templates](#prompt-templates)** · **[Config](#configuration)**
+
+Setup: [CLI](#cli) · [MCP Server](#mcp-server-claude-code-cursor-windsurf) · [TUI](#interactive-tui) · [Models](#models)
+
+---
+
 ## Quick Install
 
 Clone the repo, then tell your AI agent to set everything up:
