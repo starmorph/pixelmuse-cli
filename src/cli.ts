@@ -204,7 +204,8 @@ async function handleGenerate(prompt: string) {
 
     // Preview
     if (cli.flags.preview && result.imagePath) {
-      renderImageDirect(result.imagePath)
+      const previewed = renderImageDirect(result.imagePath)
+      if (!previewed) console.log(chalk.gray('  Install chafa for terminal image preview'))
     }
 
     // Clipboard

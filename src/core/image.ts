@@ -19,7 +19,8 @@ export function hasChafa(): boolean {
 /** Convert generation output (base64 data URI or URL) to a Buffer */
 export async function imageToBuffer(output: string): Promise<Buffer> {
   if (output.startsWith('data:')) {
-    const base64 = output.split(',', 2)[1]!
+    const base64 = output.split(',', 2)[1]
+    if (!base64) throw new Error('Invalid data URI: missing base64 content')
     return Buffer.from(base64, 'base64')
   }
   // HTTPS URL — fetch and buffer

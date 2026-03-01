@@ -3,7 +3,7 @@
 [![CI](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/ci.yml)
 [![Security](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml/badge.svg)](https://github.com/starmorph/pixelmuse-cli/actions/workflows/security.yml)
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](./LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-brightgreen.svg)](https://nodejs.org)
 
 AI image generation from the command line, powered by the [Pixelmuse](https://pixelmuse.studio) API.
 
@@ -53,7 +53,7 @@ Generate your first image:
 pixelmuse "a cat floating through space"
 ```
 
-Requires Node.js 18+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` on macOS, `sudo apt install chafa` on Ubuntu).
+Requires Node.js 20+. For terminal image previews, install [chafa](https://hpjansson.org/chafa/) (`brew install chafa` on macOS, `sudo apt install chafa` on Ubuntu).
 
 ---
 

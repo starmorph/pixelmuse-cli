@@ -39,9 +39,11 @@ export function getTemplate(name: string): PromptTemplate | null {
 /** Save a template (create or update) */
 export function saveTemplate(template: PromptTemplate): void {
   ensureDirs()
+  const yaml = YAML.stringify(template)
+  YAML.parse(yaml) // validate round-trip before writing
   const slug = slugify(template.name)
   const path = join(PATHS.prompts, `${slug}.yaml`)
-  writeFileSync(path, YAML.stringify(template), 'utf-8')
+  writeFileSync(path, yaml, 'utf-8')
 }
 
 /** Delete a template by name */

@@ -28,7 +28,8 @@ function reducer(state: State, action: Action): State {
       return { current: action.route, history: [...state.history, state.current] }
     case 'back': {
       if (state.history.length === 0) return state
-      const prev = state.history[state.history.length - 1]!
+      const prev = state.history.at(-1)
+      if (!prev) return state
       return { current: prev, history: state.history.slice(0, -1) }
     }
     case 'replace':

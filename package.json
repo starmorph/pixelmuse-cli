@@ -40,7 +40,6 @@
     "open": "^10.1.0",
     "ora": "^9.3.0",
     "react": "^19.2.4",
-    "terminal-image": "^3.0.0",
     "yaml": "^2.7.0",
     "zod": "^4.3.6"
   },
@@ -59,7 +58,7 @@
     "vitest": "^4.0.18"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
