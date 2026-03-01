@@ -4,13 +4,14 @@ import { PixelmuseClient } from './client.js'
 import { pollGeneration } from './polling.js'
 import { imageToBuffer, saveImage, autoSave } from './image.js'
 import { slugify } from './prompts.js'
-import type { Model, AspectRatio, Style, Generation } from './types.js'
+import type { Model, AspectRatio, Style, Visibility, Generation } from './types.js'
 
 export interface GenerateOptions {
   prompt: string
   model?: Model
   aspectRatio?: AspectRatio
   style?: Style
+  visibility?: Visibility
   /** Explicit output path. If omitted, saves to cwd with slugified prompt name */
   output?: string
   /** Skip saving to disk entirely */
@@ -54,6 +55,7 @@ export async function generateImage(
     model = 'nano-banana-2',
     aspectRatio = '1:1',
     style,
+    visibility,
     output,
     noSave = false,
     onProgress,
@@ -67,6 +69,7 @@ export async function generateImage(
     model,
     aspect_ratio: aspectRatio,
     style: style === 'none' ? undefined : style,
+    visibility,
   })
 
   // Poll if async (Replicate models)

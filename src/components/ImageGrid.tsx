@@ -53,6 +53,7 @@ export default function ImageGrid({ generations, columns = 3, onSelect }: Props)
                 <Text color={gen.status === 'succeeded' ? 'green' : gen.status === 'failed' ? 'red' : 'yellow'}>
                   {gen.status === 'succeeded' ? '●' : gen.status === 'failed' ? '✗' : '◌'}{' '}
                   {gen.model}
+                  {gen.visibility === 'private' ? ' 🔒' : ''}
                 </Text>
                 <Text color="gray" wrap="truncate">
                   {gen.prompt.slice(0, cellWidth - 4)}

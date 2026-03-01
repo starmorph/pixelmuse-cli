@@ -5,7 +5,7 @@ import { PixelmuseClient, CLI_VERSION } from '../core/client.js'
 import { generateImage } from '../core/generate.js'
 import { getApiKey } from '../core/auth.js'
 import { readSettings } from '../core/config.js'
-import type { Model, AspectRatio, Style } from '../core/types.js'
+import type { Model, AspectRatio, Style, Visibility } from '../core/types.js'
 
 const MODELS = [
   'nano-banana-2',
@@ -42,6 +42,7 @@ server.tool(
     aspect_ratio: z.enum(ASPECT_RATIOS).optional().default('1:1').describe('Image aspect ratio'),
     style: z.enum(STYLES).optional().default('none').describe('Visual style'),
     output_path: z.string().optional().describe('Where to save the image (default: current directory)'),
+    visibility: z.enum(['public', 'private']).optional().describe('Image visibility (default: private)'),
   },
   async (args) => {
     const client = await getClient()
@@ -52,6 +53,7 @@ server.tool(
       model: (args.model ?? settings.defaultModel) as Model,
       aspectRatio: (args.aspect_ratio ?? settings.defaultAspectRatio) as AspectRatio,
       style: (args.style ?? settings.defaultStyle) as Style,
+      visibility: (args.visibility ?? settings.defaultVisibility) as Visibility,
       output: args.output_path,
     })
 
@@ -65,6 +67,7 @@ server.tool(
             model: result.generation.model,
             prompt: result.generation.prompt,
             credits_charged: result.generation.credits_charged,
+            visibility: result.generation.visibility,
             elapsed_seconds: Math.round(result.elapsed * 10) / 10,
             output_path: result.imagePath,
           }, null, 2),

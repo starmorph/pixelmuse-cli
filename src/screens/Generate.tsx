@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Box, Text, useApp, useInput } from 'ink'
 import { Select, TextInput } from '@inkjs/ui'
 import type { PixelmuseClient } from '../core/client.js'
-import type { Generation, Model, AspectRatio, Style } from '../core/types.js'
+import type { Generation, Model, AspectRatio, Style, Visibility } from '../core/types.js'
 import { pollGeneration } from '../core/polling.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
 import GenerationProgress from '../components/GenerationProgress.js'
@@ -48,6 +48,7 @@ interface Props {
   defaultModel?: string
   defaultAspectRatio?: string
   defaultStyle?: string
+  defaultVisibility?: Visibility
 }
 
 export default function Generate({
@@ -60,6 +61,7 @@ export default function Generate({
   defaultModel = 'nano-banana-2',
   defaultAspectRatio = '1:1',
   defaultStyle = 'none',
+  defaultVisibility = 'private',
 }: Props) {
   const { exit } = useApp()
   const [step, setStep] = useState<Step>(initialPrompt ? 'model' : 'prompt')
@@ -105,6 +107,7 @@ export default function Generate({
         model,
         aspect_ratio: aspectRatio,
         style: style === 'none' ? undefined : style,
+        visibility: defaultVisibility,
       })
 
       // Replicate models: poll

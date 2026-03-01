@@ -19,6 +19,7 @@ export interface Settings {
   defaultModel: string
   defaultAspectRatio: string
   defaultStyle: string
+  defaultVisibility: 'public' | 'private'
   autoPreview: boolean
   autoSave: boolean
 }
@@ -27,6 +28,7 @@ const DEFAULT_SETTINGS: Settings = {
   defaultModel: 'nano-banana-2',
   defaultAspectRatio: '1:1',
   defaultStyle: 'none',
+  defaultVisibility: 'private',
   autoPreview: true,
   autoSave: true,
 }

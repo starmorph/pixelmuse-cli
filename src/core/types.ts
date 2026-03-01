@@ -24,6 +24,8 @@ export type AspectRatio =
 
 export type GenerationStatus = 'pending' | 'processing' | 'succeeded' | 'failed'
 
+export type Visibility = 'public' | 'private'
+
 export type PackageName = 'credit_pack'
 
 // ── Request types ──────────────────────────────────────────────────────
@@ -35,6 +37,7 @@ export interface GenerateRequest {
   aspect_ratio?: AspectRatio
   negative_prompt?: string
   image_input?: string
+  visibility?: Visibility
 }
 
 export interface ListImagesParams {
@@ -64,6 +67,7 @@ export interface Generation {
   error: string | null
   created_at: string
   completed_at: string | null
+  visibility: Visibility
 }
 
 export interface PaginatedGenerations {

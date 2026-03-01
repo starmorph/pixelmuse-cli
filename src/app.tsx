@@ -90,6 +90,7 @@ export default function App({ initialRoute }: AppProps) {
             defaultModel={settings.defaultModel}
             defaultAspectRatio={settings.defaultAspectRatio}
             defaultStyle={settings.defaultStyle}
+            defaultVisibility={settings.defaultVisibility}
           />
         )
 

@@ -60,6 +60,7 @@ const cli = meow(
     --no-preview         Skip image preview
     --open               Open result in system viewer
     --watch <file>       Watch a prompt file and regenerate on save
+    --public             Make image public (default: private)
     --no-save            Don't save image to disk
     --clipboard          Copy image to clipboard
     -h, --help           Show this help
@@ -82,6 +83,7 @@ const cli = meow(
       preview: { type: 'boolean', default: true },
       open: { type: 'boolean', default: false },
       watch: { type: 'string' },
+      public: { type: 'boolean', default: false },
       save: { type: 'boolean', default: true },
       clipboard: { type: 'boolean', default: false },
       var: { type: 'string', isMultiple: true },
@@ -135,6 +137,7 @@ async function handleGenerate(prompt: string) {
   const model = (cli.flags.model ?? settings.defaultModel) as Model
   const aspectRatio = (cli.flags.aspectRatio ?? settings.defaultAspectRatio) as AspectRatio
   const style = (cli.flags.style ?? settings.defaultStyle) as Style
+  const visibility = cli.flags.public ? 'public' as const : settings.defaultVisibility
 
   // Fetch balance for cost display
   let balance: number | null = null
@@ -158,6 +161,7 @@ async function handleGenerate(prompt: string) {
         model,
         aspectRatio,
         style,
+        visibility,
         output: cli.flags.output,
         noSave: !cli.flags.save,
       })
@@ -168,6 +172,7 @@ async function handleGenerate(prompt: string) {
           model: result.generation.model,
           prompt: result.generation.prompt,
           credits_charged: result.generation.credits_charged,
+          visibility: result.generation.visibility,
           elapsed_seconds: Math.round(result.elapsed * 10) / 10,
           output_path: result.imagePath,
         }),
@@ -190,6 +195,7 @@ async function handleGenerate(prompt: string) {
       model,
       aspectRatio,
       style,
+      visibility,
       output: cli.flags.output,
       noSave: !cli.flags.save,
       onProgress: (elapsed) => {
@@ -201,8 +207,9 @@ async function handleGenerate(prompt: string) {
     const remaining = balance !== null ? balance - charged : null
     const remainStr = remaining !== null ? ` (remaining: ${remaining})` : ''
 
+    const visLabel = result.generation.visibility === 'public' ? chalk.green('public') : chalk.gray('private')
     spinner.succeed(
-      `Generated in ${result.elapsed.toFixed(1)}s · ${charged} credit${charged > 1 ? 's' : ''} charged${remainStr}`,
+      `Generated in ${result.elapsed.toFixed(1)}s · ${charged} credit${charged > 1 ? 's' : ''} charged${remainStr} · ${visLabel}`,
     )
 
     if (result.imagePath) {
@@ -256,6 +263,7 @@ async function handleWatch(filePath: string) {
     const model = (cli.flags.model ?? settings.defaultModel) as Model
     const aspectRatio = (cli.flags.aspectRatio ?? settings.defaultAspectRatio) as AspectRatio
     const style = (cli.flags.style ?? settings.defaultStyle) as Style
+    const watchVisibility = cli.flags.public ? 'public' as const : settings.defaultVisibility
     const time = new Date().toLocaleTimeString('en-US', { hour12: false })
 
     const spinner = ora(`[${time}] Generating... (${model})`).start()
@@ -266,6 +274,7 @@ async function handleWatch(filePath: string) {
         model,
         aspectRatio,
         style,
+        visibility: watchVisibility,
         output: cli.flags.output,
       })
       spinner.succeed(`[${time}] Saved to ${result.imagePath} (${result.elapsed.toFixed(1)}s)`)
@@ -377,10 +386,11 @@ async function handleHistory() {
       const prompt = gen.prompt.length > 30 ? gen.prompt.slice(0, 30) + '...' : gen.prompt
       const date = timeAgo(new Date(gen.created_at))
       const status = gen.status === 'succeeded' ? chalk.green('●') : gen.status === 'failed' ? chalk.red('✗') : chalk.yellow('◌')
+      const vis = gen.visibility === 'private' ? chalk.gray(' 🔒') : ''
 
       console.log(
         chalk.gray(id.padEnd(idW)) +
-          `${status} ${gen.model}`.padEnd(modelW + status.length - 1) +
+          `${status} ${gen.model}${vis}`.padEnd(modelW + status.length - 1 + vis.length) +
           prompt.padEnd(promptW) +
           chalk.gray(date),
       )

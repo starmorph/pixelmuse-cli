@@ -18,6 +18,7 @@ export type {
   Model,
   Style,
   AspectRatio,
+  Visibility,
   GenerationStatus,
   PackageName,
   GenerateRequest,
