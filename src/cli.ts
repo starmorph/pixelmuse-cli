@@ -187,7 +187,8 @@ async function handleGenerate(prompt: string) {
         console.error(JSON.stringify({ error: err.message, code: 'INSUFFICIENT_CREDITS', buy_url: 'https://www.pixelmuse.studio/get-credits' }))
         process.exit(1)
       }
-      console.error(JSON.stringify({ error: err instanceof Error ? err.message : 'Generation failed' }))
+      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
+      console.error(JSON.stringify({ error: msg }))
       process.exit(1)
     }
     return
@@ -279,7 +280,8 @@ async function handleGenerate(prompt: string) {
         process.exit(1)
       }
     }
-    spinner.fail(err instanceof Error ? err.message : 'Generation failed')
+    const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
+    spinner.fail(msg)
     process.exit(1)
   }
 }
