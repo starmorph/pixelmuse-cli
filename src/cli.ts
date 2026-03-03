@@ -183,8 +183,12 @@ async function handleGenerate(prompt: string) {
         }),
       )
     } catch (err) {
-      if (err instanceof ApiError && err.status === 402) {
-        console.error(JSON.stringify({ error: err.message, code: 'INSUFFICIENT_CREDITS', buy_url: 'https://www.pixelmuse.studio/get-credits' }))
+      if (err instanceof ApiError) {
+        if (err.status === 402) {
+          console.error(JSON.stringify({ error: err.message, status: 402, code: 'INSUFFICIENT_CREDITS', buy_url: 'https://www.pixelmuse.studio/get-credits' }))
+        } else {
+          console.error(JSON.stringify({ error: err.message, status: err.status, code: err.code }))
+        }
         process.exit(1)
       }
       const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
@@ -279,6 +283,16 @@ async function handleGenerate(prompt: string) {
         spinner.fail(`Rate limited.${wait} Upgrade plan for higher limits.`)
         process.exit(1)
       }
+      if (err.status === 500) {
+        spinner.fail('Server error — the image provider may be temporarily down. Try again in a moment.')
+        process.exit(1)
+      }
+      if (err.status === 503) {
+        spinner.fail('Service temporarily unavailable. Try again in a few seconds.')
+        process.exit(1)
+      }
+      spinner.fail(err.message)
+      process.exit(1)
     }
     const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
     spinner.fail(msg)
