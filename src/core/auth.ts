@@ -54,6 +54,7 @@ export async function saveApiKey(key: string): Promise<void> {
   // File fallback with restrictive permissions
   writeFileSync(PATHS.auth, JSON.stringify({ apiKey: key }), 'utf-8')
   chmodSync(PATHS.auth, 0o600)
+  console.error(`Credentials stored in ${PATHS.auth} (install keyring-node for OS keychain)`)
 }
 
 /** Delete API key from all storage locations */

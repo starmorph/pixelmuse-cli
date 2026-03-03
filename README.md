@@ -26,7 +26,7 @@
 
 - **One command, any model.** Flux, Imagen 3, Recraft V4, and more — switch models with a flag, no separate accounts or API keys.
 - **Built for developer workflows.** Pipe from stdin, JSON output for scripting, watch mode for prompt iteration, MCP server for AI agents.
-- **Predictable credit pricing.** 1-3 credits per generation, no surprises. Free credits on signup.
+- **Predictable credit pricing.** 1–7 credits per generation, most models just 1 credit. Free credits on signup.
 
 ## Get Started
 

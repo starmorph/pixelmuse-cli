@@ -23,6 +23,7 @@ import {
   pollForToken,
   detectEditors,
   configureMcp,
+  ApiError,
   type Model,
   type AspectRatio,
   type Style,
@@ -107,7 +108,11 @@ async function readStdin(): Promise<string | null> {
 async function requireClient(): Promise<PixelmuseClient> {
   const key = await getApiKey()
   if (!key) {
-    console.error(chalk.red('Not authenticated. Run: pixelmuse login'))
+    if (cli.flags.json) {
+      console.error(JSON.stringify({ error: 'Not authenticated. Run: pixelmuse login' }))
+    } else {
+      console.error(chalk.red('Not authenticated. Run: pixelmuse login'))
+    }
     process.exit(1)
   }
   return new PixelmuseClient(key)
@@ -178,6 +183,10 @@ async function handleGenerate(prompt: string) {
         }),
       )
     } catch (err) {
+      if (err instanceof ApiError && err.status === 402) {
+        console.error(JSON.stringify({ error: err.message, code: 'INSUFFICIENT_CREDITS', buy_url: 'https://www.pixelmuse.studio/get-credits' }))
+        process.exit(1)
+      }
       console.error(JSON.stringify({ error: err instanceof Error ? err.message : 'Generation failed' }))
       process.exit(1)
     }
@@ -216,6 +225,21 @@ async function handleGenerate(prompt: string) {
       console.log(chalk.gray(`  Saved to ${result.imagePath}`))
     }
 
+    if (result.generation.visibility === 'public') {
+      console.log(chalk.cyan(`  View: https://www.pixelmuse.studio/g/${result.generation.id}`))
+    }
+
+    // Post-generation tips
+    settings.generationCount++
+    writeSettings(settings)
+    if (settings.generationCount === 1) {
+      console.log(chalk.gray('  Tip: try pixelmuse ui for interactive mode'))
+    } else if (settings.generationCount === 2) {
+      console.log(chalk.gray('  Tip: pixelmuse template init my-template — save reusable prompts'))
+    } else if (settings.generationCount === 3) {
+      console.log(chalk.gray('  Tip: pixelmuse --watch prompt.txt — auto-regenerate on save'))
+    }
+
     // Preview
     if (cli.flags.preview && result.imagePath) {
       const previewed = renderImageDirect(result.imagePath)
@@ -225,7 +249,11 @@ async function handleGenerate(prompt: string) {
     // Clipboard
     if (cli.flags.clipboard && result.imagePath) {
       const ok = await copyToClipboard(result.imagePath)
-      if (ok) console.log(chalk.gray('  Copied to clipboard'))
+      if (ok) {
+        console.log(chalk.gray('  Copied to clipboard'))
+      } else {
+        console.log(chalk.gray('  Clipboard failed — install xclip (X11) or wl-copy (Wayland)'))
+      }
     }
 
     // Open in viewer
@@ -234,6 +262,23 @@ async function handleGenerate(prompt: string) {
       await open(result.imagePath)
     }
   } catch (err) {
+    if (err instanceof ApiError) {
+      if (err.status === 402) {
+        spinner.fail('Insufficient credits')
+        console.log(chalk.yellow(`  Buy credits: ${chalk.underline('https://www.pixelmuse.studio/get-credits')}`))
+        console.log(chalk.gray(`  Or try a 1-credit model: pixelmuse "prompt" -m nano-banana-2`))
+        process.exit(1)
+      }
+      if (err.status === 401) {
+        spinner.fail('API key invalid or expired. Run: pixelmuse login')
+        process.exit(1)
+      }
+      if (err.status === 429) {
+        const wait = err.retryAfter ? ` Wait ${err.retryAfter}s.` : ''
+        spinner.fail(`Rate limited.${wait} Upgrade plan for higher limits.`)
+        process.exit(1)
+      }
+    }
     spinner.fail(err instanceof Error ? err.message : 'Generation failed')
     process.exit(1)
   }
@@ -384,7 +429,7 @@ async function handleHistory() {
       return
     }
 
-    const idW = 18
+    const idW = 40
     const modelW = 22
     const promptW = 34
     console.log(
@@ -393,10 +438,10 @@ async function handleHistory() {
         chalk.bold('Prompt'.padEnd(promptW)) +
         chalk.bold('Date'),
     )
-    console.log(chalk.gray('─'.repeat(90)))
+    console.log(chalk.gray('─'.repeat(110)))
 
     for (const gen of result.data) {
-      const id = gen.id.slice(0, 15) + '...'
+      const id = gen.id
       const prompt = gen.prompt.length > 30 ? gen.prompt.slice(0, 30) + '...' : gen.prompt
       const date = timeAgo(new Date(gen.created_at))
       const status = gen.status === 'succeeded' ? chalk.green('●') : gen.status === 'failed' ? chalk.red('✗') : chalk.yellow('◌')
@@ -585,8 +630,12 @@ async function handleSetup() {
       })
 
       if (answer === '' || answer === 'y' || answer === 'yes') {
-        configureMcp(editor, apiKey)
-        console.log(chalk.green('  ✓') + ` ${editor.name} MCP configured`)
+        try {
+          configureMcp(editor, apiKey)
+          console.log(chalk.green('  ✓') + ` ${editor.name} MCP configured`)
+        } catch (err) {
+          console.log(chalk.yellow('  ⚠') + ` ${editor.name}: ${err instanceof Error ? err.message : 'Configuration failed'}`)
+        }
       } else {
         console.log(chalk.gray(`  Skipped ${editor.name}`))
       }
@@ -646,6 +695,14 @@ async function handleSetup() {
   console.log(`  TUI:    ${chalk.cyan('pixelmuse ui')}`)
   console.log(`  Help:   ${chalk.cyan('pixelmuse --help')}`)
   console.log()
+
+  console.log(chalk.bold('  Generating your first image...'))
+  console.log()
+  try {
+    await handleGenerate('a cosmic fox surrounded by nebula colors, cinematic lighting')
+  } catch {
+    // Demo generation is non-critical
+  }
 }
 
 // ── Template commands ──────────────────────────────────────────────────
@@ -805,17 +862,18 @@ async function main() {
 
     // Explicit generate or default with prompt
     case 'generate': {
+      if (cli.flags.watch) return handleWatch(cli.flags.watch)
       const stdinPrompt = await readStdin()
       const prompt = rest.join(' ') || stdinPrompt
       if (!prompt) {
         console.error(chalk.red('Usage: pixelmuse generate "your prompt"'))
         process.exit(1)
       }
-      if (cli.flags.watch) return handleWatch(cli.flags.watch)
       return handleGenerate(prompt)
     }
 
     default: {
+      if (cli.flags.watch) return handleWatch(cli.flags.watch)
       // Default: treat everything as a prompt
       const stdinPrompt = await readStdin()
       const prompt = cli.input.join(' ') || stdinPrompt
@@ -826,7 +884,6 @@ async function main() {
         }
         return
       }
-      if (cli.flags.watch) return handleWatch(cli.flags.watch)
       return handleGenerate(prompt)
     }
   }

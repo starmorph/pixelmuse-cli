@@ -22,6 +22,7 @@ export interface Settings {
   defaultVisibility: 'public' | 'private'
   autoPreview: boolean
   autoSave: boolean
+  generationCount: number
 }
 
 const DEFAULT_SETTINGS: Settings = {
@@ -31,6 +32,7 @@ const DEFAULT_SETTINGS: Settings = {
   defaultVisibility: 'private',
   autoPreview: true,
   autoSave: true,
+  generationCount: 0,
 }
 
 /** Ensure all config/data directories exist */
@@ -62,6 +64,7 @@ export function readSettings(): Settings {
     if (!VALID_VISIBILITY.includes(parsed.defaultVisibility)) parsed.defaultVisibility = DEFAULT_SETTINGS.defaultVisibility
     if (typeof parsed.autoPreview !== 'boolean') parsed.autoPreview = DEFAULT_SETTINGS.autoPreview
     if (typeof parsed.autoSave !== 'boolean') parsed.autoSave = DEFAULT_SETTINGS.autoSave
+    if (typeof parsed.generationCount !== 'number') parsed.generationCount = DEFAULT_SETTINGS.generationCount
 
     return parsed
   } catch {

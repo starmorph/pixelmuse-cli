@@ -3,6 +3,7 @@ import { render } from 'ink'
 import App from './app.js'
 import type { Route } from './hooks/useRouter.js'
 import type { PreviewPayload } from './screens/Generate.js'
+import chalk from 'chalk'
 import { renderImageDirect } from './core/image.js'
 
 /** Render image preview outside Ink, then handle keybinds for next action */
@@ -14,14 +15,12 @@ function showPreview(payload: PreviewPayload): Promise<Route | null> {
   }
 
   console.log()
-  console.log(
-    `Model: \x1b[1m${generation.model}\x1b[0m | Credits: \x1b[32m${generation.credits_charged}\x1b[0m`,
-  )
+  console.log(`Model: ${chalk.bold(generation.model)} | Credits: ${chalk.green(String(generation.credits_charged))}`)
   if (imagePath) {
-    console.log(`\x1b[2mSaved to ${imagePath}\x1b[0m`)
+    console.log(chalk.gray(`Saved to ${imagePath}`))
   }
   console.log()
-  console.log('\x1b[90m[r] regenerate | [g] gallery | [h] home | [q] quit\x1b[0m')
+  console.log(chalk.gray('[r] regenerate | [g] gallery | [h] home | [q] quit'))
 
   return new Promise((resolve) => {
     const { stdin } = process
