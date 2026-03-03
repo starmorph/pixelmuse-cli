@@ -18,8 +18,7 @@
 
 ---
 
-<!-- GIF: Hero — basic generation. Record: pixelmuse "a cyberpunk city at sunset, neon lights reflecting on wet streets" -->
-<!-- Replace this comment with: <p align="center"><img src="YOUR_GIF_URL" alt="Pixelmuse CLI demo" width="600" /></p> -->
+<p align="center"><img src="./assets/demos/cli-generate.gif" alt="Pixelmuse CLI generating an image" width="700" /></p>
 
 ---
 
@@ -56,8 +55,7 @@ pixelmuse "mountain landscape" -s anime -a 21:9
 pixelmuse "app icon, minimal" -o icon.png
 ```
 
-<!-- GIF: Model selection. Record: pixelmuse "a cat astronaut" -m recraft-v4 --open -->
-<!-- Replace this comment with: <p align="center"><img src="YOUR_GIF_URL" alt="Model selection" width="600" /></p> -->
+<p align="center"><img src="./assets/demos/account-models.gif" alt="Account and model overview" width="700" /></p>
 
 ## Prompt Templates
 
@@ -74,8 +72,6 @@ pixelmuse template use blog-thumbnail --var subject="React hooks guide"
 pixelmuse template list
 ```
 
-<!-- GIF: Template system. Record: pixelmuse template use blog-thumbnail --var subject="TypeScript generics" -->
-<!-- Replace this comment with: <p align="center"><img src="YOUR_GIF_URL" alt="Template system" width="600" /></p> -->
 
 Templates are stored at `~/.config/pixelmuse-cli/prompts/`:
 
@@ -102,8 +98,7 @@ A full terminal UI for visual browsing, generation wizards, gallery, and account
 pixelmuse ui
 ```
 
-<!-- GIF: TUI. Record: pixelmuse ui → navigate Generate → pick model → type prompt → generate -->
-<!-- Replace this comment with: <p align="center"><img src="YOUR_GIF_URL" alt="Interactive TUI" width="600" /></p> -->
+<p align="center"><img src="./assets/demos/tui-generate.gif" alt="Interactive TUI generation" width="700" /></p>
 
 ## Scripting & Pipes
 
@@ -122,8 +117,7 @@ pixelmuse --watch prompt.txt -o output.png
 pixelmuse "avatar" --no-preview --clipboard
 ```
 
-<!-- GIF: Pipe/scripting. Record: echo "minimalist logo for a coffee shop" | pixelmuse --json -m flux-schnell -->
-<!-- Replace this comment with: <p align="center"><img src="YOUR_GIF_URL" alt="Scripting and pipes" width="600" /></p> -->
+<p align="center"><img src="./assets/demos/help.gif" alt="CLI help and commands" width="700" /></p>
 
 ## MCP Server (Claude Code, Cursor, Windsurf)
 
