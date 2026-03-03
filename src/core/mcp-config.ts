@@ -61,7 +61,7 @@ export function configureMcp(editor: EditorInfo, apiKey: string): void {
     try {
       config = JSON.parse(readFileSync(editor.configPath, 'utf-8')) as McpConfig
     } catch {
-      // Corrupted or empty — start fresh
+      throw new Error(`Failed to parse ${editor.configPath}. Fix the JSON manually or delete the file to start fresh.`)
     }
   } else {
     mkdirSync(dirname(editor.configPath), { recursive: true })

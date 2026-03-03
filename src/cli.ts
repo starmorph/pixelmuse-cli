@@ -115,12 +115,12 @@ async function requireClient(): Promise<PixelmuseClient> {
 
 /** Copy image to clipboard */
 async function copyToClipboard(imagePath: string): Promise<boolean> {
-  const { execSync } = await import('node:child_process')
+  const { execFileSync } = await import('node:child_process')
   try {
     if (process.platform === 'darwin') {
-      execSync(`osascript -e 'set the clipboard to (read (POSIX file "${imagePath}") as TIFF picture)'`)
+      execFileSync('osascript', ['-e', `set the clipboard to (read (POSIX file "${imagePath}") as TIFF picture)`])
     } else {
-      execSync(`xclip -selection clipboard -t image/png -i "${imagePath}"`)
+      execFileSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', imagePath])
     }
     return true
   } catch {
@@ -249,12 +249,22 @@ async function handleWatch(filePath: string) {
   console.log(chalk.cyan(`Watching ${absPath} for changes... (Ctrl+C to stop)`))
 
   let generating = false
+  let dirty = false
 
   const generate = async () => {
-    if (generating) return
+    if (generating) {
+      dirty = true
+      return
+    }
     generating = true
 
-    const prompt = readFileSync(absPath, 'utf-8').trim()
+    let prompt: string
+    try {
+      prompt = readFileSync(absPath, 'utf-8').trim()
+    } catch {
+      generating = false
+      return
+    }
     if (!prompt) {
       generating = false
       return
@@ -283,6 +293,10 @@ async function handleWatch(filePath: string) {
     }
 
     generating = false
+    if (dirty) {
+      dirty = false
+      generate()
+    }
   }
 
   // Initial generate
@@ -752,9 +766,6 @@ async function handleTemplate() {
 // ── Main router ────────────────────────────────────────────────────────
 
 async function main() {
-  // Handle stdin pipe
-  const stdinPrompt = await readStdin()
-
   switch (subcommand) {
     case 'models':
       return handleModels()
@@ -794,6 +805,7 @@ async function main() {
 
     // Explicit generate or default with prompt
     case 'generate': {
+      const stdinPrompt = await readStdin()
       const prompt = rest.join(' ') || stdinPrompt
       if (!prompt) {
         console.error(chalk.red('Usage: pixelmuse generate "your prompt"'))
@@ -805,6 +817,7 @@ async function main() {
 
     default: {
       // Default: treat everything as a prompt
+      const stdinPrompt = await readStdin()
       const prompt = cli.input.join(' ') || stdinPrompt
       if (!prompt) {
         // No args, no stdin → show help or launch TUI

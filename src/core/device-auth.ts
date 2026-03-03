@@ -55,6 +55,7 @@ export async function pollForToken(
 ): Promise<DeviceAuthResult> {
   const deadline = Date.now() + options.expiresIn * 1000
   let intervalMs = options.interval * 1000
+  let consecutiveErrors = 0
 
   while (Date.now() < deadline) {
     await new Promise((r) => setTimeout(r, intervalMs))
@@ -74,6 +75,7 @@ export async function pollForToken(
       })
 
       const data = (await res.json()) as Record<string, unknown>
+      consecutiveErrors = 0
 
       if (data.api_key) {
         return {
@@ -99,6 +101,10 @@ export async function pollForToken(
     } catch (err) {
       // Re-throw our own errors, swallow network errors
       if (err instanceof Error && (err.message.includes('timed out') || err.message.includes('denied'))) {
+        throw err
+      }
+      consecutiveErrors++
+      if (consecutiveErrors >= 3) {
         throw err
       }
     }

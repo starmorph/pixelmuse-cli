@@ -67,7 +67,9 @@ export async function deleteApiKey(): Promise<void> {
   }
 
   // Delete file
-  if (existsSync(PATHS.auth)) {
+  try {
     unlinkSync(PATHS.auth)
+  } catch {
+    // ignore — file may not exist
   }
 }

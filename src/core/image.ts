@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { PATHS } from './config.js'
@@ -8,7 +8,7 @@ let _chafaAvailable: boolean | null = null
 export function hasChafa(): boolean {
   if (_chafaAvailable !== null) return _chafaAvailable
   try {
-    execSync('chafa --version', { stdio: 'ignore' })
+    execFileSync('chafa', ['--version'], { stdio: 'ignore' })
     _chafaAvailable = true
   } catch {
     _chafaAvailable = false
@@ -55,7 +55,7 @@ export function renderImageDirect(path: string): boolean {
   if (!hasChafa()) return false
 
   try {
-    execSync(`chafa --animate off "${path}"`, {
+    execFileSync('chafa', ['--animate', 'off', path], {
       stdio: 'inherit',
       maxBuffer: 10 * 1024 * 1024,
     })

@@ -72,6 +72,10 @@ export async function generateImage(
     visibility,
   })
 
+  if (gen.status === 'failed') {
+    throw new Error(gen.error ?? 'Generation failed')
+  }
+
   // Poll if async (Replicate models)
   if (gen.status === 'processing' || gen.status === 'pending') {
     gen = await pollGeneration(client, gen.id, { onProgress })

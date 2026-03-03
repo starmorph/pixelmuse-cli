@@ -30,16 +30,24 @@ export class PixelmuseClient {
     this.apiKey = apiKey
   }
 
-  private async request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  private async request<T>(path: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<T> {
     const url = `${BASE_URL}${path}`
+    const { timeoutMs = 30_000, ...fetchOptions } = options
     const headers: Record<string, string> = {
       ...CLIENT_HEADERS,
       Authorization: `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
-      ...(options.headers as Record<string, string>),
+      ...(fetchOptions.headers as Record<string, string>),
     }
 
-    const res = await fetch(url, { ...options, headers })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+    let res: Response
+    try {
+      res = await fetch(url, { ...fetchOptions, headers, signal: controller.signal })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     const rateLimitRemaining = res.headers.get('X-RateLimit-Remaining')
     const retryAfter = res.headers.get('Retry-After')
@@ -72,6 +80,7 @@ export class PixelmuseClient {
       method: 'POST',
       headers: { Prefer: 'wait=55' },
       body: JSON.stringify(req),
+      timeoutMs: 90_000,
     })
   }
 
@@ -118,24 +127,42 @@ export class PixelmuseClient {
 
   /** List all available models */
   static async listModels(): Promise<ModelInfo[]> {
-    const res = await fetch(`${BASE_URL}/models`, { headers: CLIENT_HEADERS })
-    if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
-    const body = (await res.json()) as { data: ModelInfo[] }
-    return body.data
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30_000)
+    try {
+      const res = await fetch(`${BASE_URL}/models`, { headers: CLIENT_HEADERS, signal: controller.signal })
+      if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
+      const body = (await res.json()) as { data: ModelInfo[] }
+      return body.data
+    } finally {
+      clearTimeout(timeoutId)
+    }
   }
 
   /** Get a single model by ID */
   static async getModel(id: string): Promise<ModelInfo> {
-    const res = await fetch(`${BASE_URL}/models/${encodeURIComponent(id)}`, { headers: CLIENT_HEADERS })
-    if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
-    return (await res.json()) as ModelInfo
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30_000)
+    try {
+      const res = await fetch(`${BASE_URL}/models/${encodeURIComponent(id)}`, { headers: CLIENT_HEADERS, signal: controller.signal })
+      if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
+      return (await res.json()) as ModelInfo
+    } finally {
+      clearTimeout(timeoutId)
+    }
   }
 
   /** List available credit packages */
   static async listPackages(): Promise<CreditPackage[]> {
-    const res = await fetch(`${BASE_URL}/billing/packages`, { headers: CLIENT_HEADERS })
-    if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
-    const body = (await res.json()) as { data: CreditPackage[] }
-    return body.data
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30_000)
+    try {
+      const res = await fetch(`${BASE_URL}/billing/packages`, { headers: CLIENT_HEADERS, signal: controller.signal })
+      if (!res.ok) throw new ApiError(`HTTP ${res.status}`, res.status)
+      const body = (await res.json()) as { data: CreditPackage[] }
+      return body.data
+    } finally {
+      clearTimeout(timeoutId)
+    }
   }
 }
