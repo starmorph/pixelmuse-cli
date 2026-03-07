@@ -191,7 +191,7 @@ async function handleGenerate(prompt: string) {
         }
         process.exit(1)
       }
-      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
+      const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err) ?? 'Generation failed'
       console.error(JSON.stringify({ error: msg }))
       process.exit(1)
     }
@@ -294,7 +294,7 @@ async function handleGenerate(prompt: string) {
       spinner.fail(err.message)
       process.exit(1)
     }
-    const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : 'Generation failed'
+    const msg = err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err) ?? 'Generation failed'
     spinner.fail(msg)
     process.exit(1)
   }

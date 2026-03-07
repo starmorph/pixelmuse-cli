@@ -56,9 +56,17 @@ export class PixelmuseClient {
       let message = `HTTP ${res.status}`
       let code: string | undefined
       try {
-        const body = (await res.json()) as { error?: string; code?: string }
-        message = body.error ?? message
-        code = body.code
+        const body = (await res.json()) as { error?: unknown; code?: string; message?: string }
+        if (typeof body.error === 'string') {
+          message = body.error
+        } else if (body.error && typeof body.error === 'object') {
+          const errObj = body.error as { message?: string; code?: string }
+          message = errObj.message ?? JSON.stringify(body.error)
+          code = errObj.code ?? code
+        } else if (body.message) {
+          message = body.message
+        }
+        code = body.code ?? code
       } catch {
         // ignore parse errors
       }
