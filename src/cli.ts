@@ -24,6 +24,7 @@ import {
   detectEditors,
   configureMcp,
   ApiError,
+  buildMacClipboardArgs,
   type Model,
   type AspectRatio,
   type Style,
@@ -123,7 +124,7 @@ async function copyToClipboard(imagePath: string): Promise<boolean> {
   const { execFileSync } = await import('node:child_process')
   try {
     if (process.platform === 'darwin') {
-      execFileSync('osascript', ['-e', `set the clipboard to (read (POSIX file "${imagePath}") as TIFF picture)`])
+      execFileSync('osascript', buildMacClipboardArgs(imagePath))
     } else {
       execFileSync('xclip', ['-selection', 'clipboard', '-t', 'image/png', '-i', imagePath])
     }
