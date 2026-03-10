@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod'
@@ -6,6 +7,12 @@ import { generateImage } from '../core/generate.js'
 import { getApiKey } from '../core/auth.js'
 import { readSettings } from '../core/config.js'
 import type { Model, AspectRatio, Style, Visibility } from '../core/types.js'
+
+Sentry.init({
+  dsn: 'https://2f0f6f1d46c513363586b70e773fb58a@o4505038534541312.ingest.us.sentry.io/4511018144366592',
+  tracesSampleRate: 1.0,
+  sendDefaultPii: true,
+})
 
 const MODELS = [
   'nano-banana-2',
@@ -26,10 +33,10 @@ async function getClient(): Promise<PixelmuseClient> {
   return new PixelmuseClient(key)
 }
 
-const server = new McpServer({
+const server = Sentry.wrapMcpServerWithSentry(new McpServer({
   name: 'pixelmuse',
   version: CLI_VERSION,
-})
+}))
 
 // ── generate_image tool ────────────────────────────────────────────────
 
