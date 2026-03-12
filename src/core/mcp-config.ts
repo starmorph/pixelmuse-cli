@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync, mkdirSync, chmodSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { homedir } from 'node:os'
 
@@ -71,4 +71,8 @@ export function configureMcp(editor: EditorInfo, apiKey: string): void {
   config.mcpServers.pixelmuse = entry
 
   writeFileSync(editor.configPath, JSON.stringify(config, null, 2) + '\n', 'utf-8')
+  try {
+    chmodSync(editor.configPath, 0o600)
+  } catch {
+  }
 }
