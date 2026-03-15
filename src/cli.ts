@@ -716,7 +716,15 @@ async function handleSetup() {
   console.log(chalk.bold('  Generating your first image...'))
   console.log()
   try {
-    await handleGenerate('a cosmic fox surrounded by nebula colors, cinematic lighting')
+    const settings = readSettings()
+    const demoClient = new PixelmuseClient(apiKey)
+    await generateImage(demoClient, {
+      prompt: 'a cosmic fox surrounded by nebula colors, cinematic lighting',
+      model: settings.defaultModel as Model,
+      aspectRatio: settings.defaultAspectRatio as AspectRatio,
+      style: settings.defaultStyle as Style,
+      visibility: settings.defaultVisibility,
+    })
   } catch {
     // Demo generation is non-critical
   }
