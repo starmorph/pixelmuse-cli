@@ -6,16 +6,14 @@ import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
 import ImagePreview from '../components/ImagePreview.js'
-import type { Route } from '../hooks/useRouter.js'
 
 interface Props {
   client: PixelmuseClient
   generationId: string
-  navigate: (route: Route) => void
   back: () => void
 }
 
-export default function GalleryDetail({ client, generationId, navigate, back }: Props) {
+export default function GalleryDetail({ client, generationId, back }: Props) {
   const [generation, setGeneration] = useState<Generation | null>(null)
   const [imagePath, setImagePath] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
