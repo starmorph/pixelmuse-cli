@@ -18,7 +18,7 @@
 
 ---
 
-<p align="center"><img src="./assets/demos/tui-generate.gif" alt="Interactive TUI generation" width="700" /></p>
+<p align="center"><img src="./assets/demos/pixelmuse-cli-demo.gif" alt="Pixelmuse CLI demo" width="700" /></p>
 
 ---
 
