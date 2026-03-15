@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { ConfirmInput, Spinner } from '@inkjs/ui'
+import open from 'open'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
@@ -49,8 +50,8 @@ export default function GalleryDetail({ client, generationId, navigate, back }: 
   useInput((input) => {
     if (confirming) return
     if (input === 'd') setConfirming(true)
-    if (input === 'r' && generation) {
-      navigate({ screen: 'generate', prompt: generation.prompt, model: generation.model })
+    if (input === 'o' && generation) {
+      open(`https://www.pixelmuse.studio/g/${generation.id}`)
     }
   })
 
@@ -112,7 +113,7 @@ export default function GalleryDetail({ client, generationId, navigate, back }: 
           <ConfirmInput onConfirm={handleConfirm} onCancel={handleCancel} />
         </Box>
       ) : (
-        <Text color="gray">[d] delete | [r] regenerate | esc back</Text>
+        <Text color="gray">[o] open in browser | [d] delete | esc back</Text>
       )}
     </Box>
   )
