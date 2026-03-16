@@ -13,7 +13,10 @@ interface Props {
   back: () => void
 }
 
-export default function GalleryDetail({ client, generationId, back }: Props) {
+
+export default function GalleryDetail({ client, generationId, navigate: _navigate, back }: Props) {
+
+
   const [generation, setGeneration] = useState<Generation | null>(null)
   const [imagePath, setImagePath] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
