@@ -104,7 +104,6 @@ export default function App({ initialRoute }: AppProps) {
           <GalleryDetail
             client={client}
             generationId={route.id}
-            navigate={navigate}
             back={back}
           />
         )
