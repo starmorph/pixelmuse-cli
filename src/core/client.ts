@@ -79,7 +79,11 @@ export class PixelmuseClient {
       )
     }
 
-    return (await res.json()) as T
+    const bodyText = await res.text()
+    if (bodyText.trim().length === 0) {
+      return undefined as T
+    }
+    return JSON.parse(bodyText) as T
   }
 
   /** Generate an image. Uses Prefer: wait=55 for sync response. */
