@@ -713,12 +713,23 @@ async function handleSetup() {
   console.log(`  Help:   ${chalk.cyan('pixelmuse --help')}`)
   console.log()
 
-  console.log(chalk.bold('  Generating your first image...'))
-  console.log()
+  const demoSpinner = ora('  Generating your first image...').start()
   try {
-    await handleGenerate('a cosmic fox surrounded by nebula colors, cinematic lighting')
-  } catch {
-    // Demo generation is non-critical
+    const settings = readSettings()
+    const demoResult = await generateImage(new PixelmuseClient(apiKey), {
+      prompt: 'a cosmic fox surrounded by nebula colors, cinematic lighting',
+      model: settings.defaultModel as Model,
+      aspectRatio: settings.defaultAspectRatio as AspectRatio,
+      style: settings.defaultStyle as Style,
+      visibility: settings.defaultVisibility,
+    })
+    demoSpinner.succeed(`  First image generated in ${demoResult.elapsed.toFixed(1)}s`)
+    if (demoResult.imagePath) {
+      console.log(chalk.gray(`  Saved to ${demoResult.imagePath}`))
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : 'failed'
+    demoSpinner.warn(`  Skipping demo generation (${msg})`)
   }
 }
 
