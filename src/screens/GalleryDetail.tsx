@@ -13,6 +13,21 @@ interface Props {
   back: () => void
 }
 
+export async function openGenerationInBrowser(
+  generationId: string,
+  openFn: (target: string) => Promise<unknown> = open,
+): Promise<string | null> {
+  try {
+    await openFn(`https://www.pixelmuse.studio/g/${generationId}`)
+    return null
+  } catch (error) {
+    if (error instanceof Error) {
+      return error.message
+    }
+    return 'Unknown error'
+  }
+}
+
 export default function GalleryDetail({ client, generationId, back }: Props) {
   const [generation, setGeneration] = useState<Generation | null>(null)
   const [imagePath, setImagePath] = useState<string | null>(null)
@@ -49,7 +64,11 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      void openGenerationInBrowser(generation.id).then((openError) => {
+        if (openError) {
+          setError(`Failed to open browser: ${openError}`)
+        }
+      })
     }
   })
 
