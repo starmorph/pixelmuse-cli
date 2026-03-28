@@ -79,6 +79,9 @@ export class PixelmuseClient {
       )
     }
 
+    if (res.status === 204 || res.status === 205) {
+      return undefined as T
+    }
     return (await res.json()) as T
   }
 
