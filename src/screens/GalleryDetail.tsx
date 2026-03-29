@@ -5,6 +5,7 @@ import open from 'open'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
+import { openGenerationInBrowser } from '../core/browser.js'
 import ImagePreview from '../components/ImagePreview.js'
 
 interface Props {
@@ -49,7 +50,12 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      void (async () => {
+        const openError = await openGenerationInBrowser(generation.id, open)
+        if (openError) {
+          setError(openError)
+        }
+      })()
     }
   })
 
