@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { ConfirmInput, Spinner } from '@inkjs/ui'
-import open from 'open'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
+import { openGenerationInBrowser } from '../core/browser.js'
 import ImagePreview from '../components/ImagePreview.js'
 
 interface Props {
@@ -19,6 +19,7 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
   const [loading, setLoading] = useState(true)
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -49,7 +50,12 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      setActionError(null)
+      void openGenerationInBrowser(generation.id).then((openError) => {
+        if (openError) {
+          setActionError(`Could not open browser: ${openError}`)
+        }
+      })
     }
   })
 
@@ -113,6 +119,7 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
       ) : (
         <Text color="gray">[o] open in browser | [d] delete | esc back</Text>
       )}
+      {actionError && <Text color="yellow">{actionError}</Text>}
     </Box>
   )
 }
