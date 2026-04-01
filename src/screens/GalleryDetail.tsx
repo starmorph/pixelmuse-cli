@@ -5,6 +5,7 @@ import open from 'open'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
+import { safeOpen } from '../core/safe-open.js'
 import ImagePreview from '../components/ImagePreview.js'
 
 interface Props {
@@ -49,7 +50,11 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      void safeOpen(open, `https://www.pixelmuse.studio/g/${generation.id}`).then((result) => {
+        if (!result.ok) {
+          setError(result.error ?? 'Failed to open browser')
+        }
+      })
     }
   })
 
