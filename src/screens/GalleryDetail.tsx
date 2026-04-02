@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput } from 'ink'
 import { ConfirmInput, Spinner } from '@inkjs/ui'
-import open from 'open'
 import type { PixelmuseClient } from '../core/client.js'
 import type { Generation } from '../core/types.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
+import { openGenerationInBrowser } from '../core/browser.js'
 import ImagePreview from '../components/ImagePreview.js'
 
 interface Props {
@@ -45,11 +45,18 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     }
   }, [generationId])
 
+  const handleOpenInBrowser = async (id: string) => {
+    const result = await openGenerationInBrowser(id)
+    if (!result.ok && result.message) {
+      setError(result.message)
+    }
+  }
+
   useInput((input) => {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      void handleOpenInBrowser(generation.id)
     }
   })
 
