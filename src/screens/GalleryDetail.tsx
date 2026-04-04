@@ -49,7 +49,9 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      void open(`https://www.pixelmuse.studio/g/${generation.id}`).catch((err) => {
+        setError(err instanceof Error ? err.message : 'Failed to open in browser')
+      })
     }
   })
 
