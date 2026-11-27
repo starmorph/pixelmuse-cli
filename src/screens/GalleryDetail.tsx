@@ -19,6 +19,7 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
   const [loading, setLoading] = useState(true)
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [openError, setOpenError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -49,7 +50,14 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
     if (confirming) return
     if (input === 'd') setConfirming(true)
     if (input === 'o' && generation) {
-      open(`https://www.pixelmuse.studio/g/${generation.id}`)
+      const url = `https://www.pixelmuse.studio/g/${generation.id}`
+      setOpenError(null)
+      void Promise.resolve()
+        .then(() => open(url))
+        .catch((err: unknown) => {
+          const message = err instanceof Error ? err.message : 'Failed to open browser'
+          setOpenError(message)
+        })
     }
   })
 
@@ -113,6 +121,7 @@ export default function GalleryDetail({ client, generationId, back }: Props) {
       ) : (
         <Text color="gray">[o] open in browser | [d] delete | esc back</Text>
       )}
+      {openError && <Text color="red">Could not open browser: {openError}</Text>}
     </Box>
   )
 }
