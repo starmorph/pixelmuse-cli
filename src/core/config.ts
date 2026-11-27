@@ -2,6 +2,7 @@ import envPaths from 'env-paths'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import YAML from 'yaml'
+import { DEFAULT_MODEL, isModelGuard } from './types.js'
 
 const paths = envPaths('pixelmuse-cli')
 
@@ -26,7 +27,7 @@ export interface Settings {
 }
 
 const DEFAULT_SETTINGS: Settings = {
-  defaultModel: 'nano-banana-2',
+  defaultModel: DEFAULT_MODEL,
   defaultAspectRatio: '1:1',
   defaultStyle: 'none',
   defaultVisibility: 'private',
@@ -53,12 +54,11 @@ export function readSettings(): Settings {
     const raw = readFileSync(PATHS.settings, 'utf-8')
     const parsed = { ...DEFAULT_SETTINGS, ...YAML.parse(raw) } as Settings
 
-    const VALID_MODELS = ['nano-banana-2', 'nano-banana-pro', 'flux-schnell', 'imagen-3', 'recraft-v4', 'recraft-v4-pro']
     const VALID_RATIOS = ['1:1', '16:9', '9:16', '3:2', '2:3', '4:5', '5:4', '3:4', '4:3', '21:9', '9:21']
     const VALID_STYLES = ['realistic', 'anime', 'artistic', 'none']
     const VALID_VISIBILITY = ['public', 'private']
 
-    if (!VALID_MODELS.includes(parsed.defaultModel)) parsed.defaultModel = DEFAULT_SETTINGS.defaultModel
+    if (!isModelGuard(parsed.defaultModel)) parsed.defaultModel = DEFAULT_SETTINGS.defaultModel
     if (!VALID_RATIOS.includes(parsed.defaultAspectRatio)) parsed.defaultAspectRatio = DEFAULT_SETTINGS.defaultAspectRatio
     if (!VALID_STYLES.includes(parsed.defaultStyle)) parsed.defaultStyle = DEFAULT_SETTINGS.defaultStyle
     if (!VALID_VISIBILITY.includes(parsed.defaultVisibility)) parsed.defaultVisibility = DEFAULT_SETTINGS.defaultVisibility

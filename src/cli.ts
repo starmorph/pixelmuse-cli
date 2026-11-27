@@ -25,7 +25,8 @@ import {
   configureMcp,
   ApiError,
   buildMacClipboardArgs,
-  type Model,
+  DEFAULT_MODEL,
+  MODELS,
   type AspectRatio,
   type Style,
   type PromptTemplate,
@@ -54,7 +55,7 @@ const cli = meow(
     pixelmuse template <list|use|init|show>  Manage prompt templates
 
   ${chalk.bold('Options')}
-    -m, --model          Model ID (default: nano-banana-2)
+    -m, --model          Model ID (default: ${DEFAULT_MODEL})
     -a, --aspect-ratio   Aspect ratio (default: 1:1)
     -s, --style          Style: realistic, anime, artistic, none
     -o, --output         Output file path
@@ -140,7 +141,7 @@ async function handleGenerate(prompt: string) {
   const client = await requireClient()
   const settings = readSettings()
 
-  const model = (cli.flags.model ?? settings.defaultModel) as Model
+  const model = cli.flags.model ?? settings.defaultModel
   const aspectRatio = (cli.flags.aspectRatio ?? settings.defaultAspectRatio) as AspectRatio
   const style = (cli.flags.style ?? settings.defaultStyle) as Style
   const visibility = cli.flags.public ? 'public' as const : settings.defaultVisibility
@@ -272,7 +273,7 @@ async function handleGenerate(prompt: string) {
       if (err.status === 402) {
         spinner.fail('Insufficient credits')
         console.log(chalk.yellow(`  Buy credits: ${chalk.underline('https://www.pixelmuse.studio/get-credits')}`))
-        console.log(chalk.gray(`  Or try a 1-credit model: pixelmuse "prompt" -m nano-banana-2`))
+        console.log(chalk.gray(`  Or try a 1-credit model: pixelmuse "prompt" -m ${DEFAULT_MODEL}`))
         process.exit(1)
       }
       if (err.status === 401) {
@@ -332,7 +333,7 @@ async function handleWatch(filePath: string) {
       return
     }
 
-    const model = (cli.flags.model ?? settings.defaultModel) as Model
+    const model = cli.flags.model ?? settings.defaultModel
     const aspectRatio = (cli.flags.aspectRatio ?? settings.defaultAspectRatio) as AspectRatio
     const style = (cli.flags.style ?? settings.defaultStyle) as Style
     const watchVisibility = cli.flags.public ? 'public' as const : settings.defaultVisibility
@@ -677,7 +678,7 @@ async function handleSetup() {
     const settings = readSettings()
     const updated: Partial<Settings> = {}
 
-    const models = ['nano-banana-2', 'nano-banana-pro', 'flux-schnell', 'imagen-3', 'recraft-v4', 'recraft-v4-pro']
+    const models = [...MODELS]
     const aspects = ['1:1', '16:9', '9:16', '4:3', '3:4', '21:9']
     const styles = ['none', 'realistic', 'anime', 'artistic']
 
@@ -701,7 +702,7 @@ async function handleSetup() {
     writeSettings({ ...settings, ...updated } as Settings)
     console.log(chalk.green('  ✓') + ' Defaults saved')
   } else {
-    console.log(chalk.gray('  Using defaults (nano-banana-2, 1:1, no style)'))
+    console.log(chalk.gray(`  Using defaults (${DEFAULT_MODEL}, 1:1, no style)`))
   }
 
   // Summary
@@ -782,7 +783,7 @@ async function handleTemplate() {
         name,
         description: `${name} template`,
         prompt: 'A {{subject}} with dramatic lighting',
-        defaults: { model: 'nano-banana-2', aspect_ratio: '16:9' },
+        defaults: { model: DEFAULT_MODEL, aspect_ratio: '16:9' },
         variables: { subject: 'landscape' },
         tags: [],
       }
