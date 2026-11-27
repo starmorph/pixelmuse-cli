@@ -1,11 +1,33 @@
-/** All available image generation models */
-export type Model =
-  | 'nano-banana-2'
-  | 'nano-banana-pro'
-  | 'flux-schnell'
-  | 'imagen-3'
-  | 'recraft-v4'
-  | 'recraft-v4-pro'
+/**
+ * Models accepted by POST /api/v1/images.
+ * `nano-banana-2` was removed from the API and must not be sent.
+ */
+export const MODELS = [
+  'flux-schnell',
+  'imagen-3',
+  'nano-banana-pro',
+  'recraft-v4',
+  'recraft-v4-pro',
+] as const
+
+export type Model = (typeof MODELS)[number]
+
+/** 1-credit model that supports every aspect ratio the CLI offers. */
+export const DEFAULT_MODEL: Model = 'flux-schnell'
+
+export function isModelGuard(value: string): value is Model {
+  for (const model of MODELS) {
+    if (model === value) return true
+  }
+  return false
+}
+
+/** Map a requested model to a supported one, or throw if it is not in the API catalog. */
+export function resolveModel(model?: string): Model {
+  const candidate = model ?? DEFAULT_MODEL
+  if (isModelGuard(candidate)) return candidate
+  throw new Error(`Unknown model "${candidate}". Available models: ${MODELS.join(', ')}`)
+}
 
 export type Style = 'realistic' | 'anime' | 'artistic' | 'none'
 

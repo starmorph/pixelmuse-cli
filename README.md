@@ -83,7 +83,7 @@ prompt: >
   A cinematic {{subject}} on a dark gradient background,
   dramatic lighting, 8K resolution
 defaults:
-  model: nano-banana-2
+  model: flux-schnell
   aspect_ratio: "16:9"
 variables:
   subject: "code editor with syntax highlighting"
@@ -188,9 +188,8 @@ Pixelmuse ships four interfaces. Pick the one that fits your workflow — they a
 
 | Model | Credits | Best For |
 |-------|---------|----------|
-| **Nano Banana 2** (default) | 1 | Speed, text rendering, world knowledge |
+| **Flux Schnell** (default) | 1 | Quick mockups, ideation |
 | Nano Banana Pro | 4 | Text rendering, real-time info, multi-image editing |
-| Flux Schnell | 1 | Quick mockups, ideation |
 | Google Imagen 3 | 1 | Realistic photos, complex compositions |
 | Recraft V4 | 1 | Typography, design, composition |
 | Recraft V4 Pro | 7 | High-res design, art direction |
@@ -216,7 +215,7 @@ Pixelmuse ships four interfaces. Pick the one that fits your workflow — they a
 
 | Flag | Description |
 |------|-------------|
-| `-m, --model` | Model ID (default: `nano-banana-2`) |
+| `-m, --model` | Model ID (default: `flux-schnell`) |
 | `-a, --aspect-ratio` | Aspect ratio (default: `1:1`) |
 | `-s, --style` | `realistic`, `anime`, `artistic`, `none` |
 | `-o, --output` | Output file path |
@@ -232,7 +231,7 @@ Pixelmuse ships four interfaces. Pick the one that fits your workflow — they a
 Settings at `~/.config/pixelmuse-cli/config.yaml`:
 
 ```yaml
-defaultModel: nano-banana-2
+defaultModel: flux-schnell
 defaultAspectRatio: "1:1"
 defaultStyle: none
 autoPreview: true

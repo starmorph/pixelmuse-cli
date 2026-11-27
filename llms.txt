@@ -34,7 +34,7 @@ Generate: `pixelmuse "a cat floating through space"`
 
 ## CLI Flags
 
-- `-m, --model` — Model ID (default: nano-banana-2)
+- `-m, --model` — Model ID (default: flux-schnell)
 - `-a, --aspect-ratio` — Aspect ratio (default: 1:1)
 - `-s, --style` — realistic, anime, artistic, none
 - `-o, --output` — Output file path
@@ -45,9 +45,8 @@ Generate: `pixelmuse "a cat floating through space"`
 
 ## Available Models
 
-- `nano-banana-2` — 1 credit, speed and text rendering (default)
-- `nano-banana-pro` — 3 credits, text rendering and real-time info
-- `flux-schnell` — 1 credit, quick mockups and ideation
+- `flux-schnell` — 1 credit, quick mockups and ideation (default)
+- `nano-banana-pro` — 4 credits, text rendering and real-time info
 - `imagen-3` — 1 credit, realistic photos and complex compositions
 - `recraft-v4` — 1 credit, typography and design
 - `recraft-v4-pro` — 3 credits, high-res design and art direction
@@ -96,7 +95,7 @@ Templates are YAML files with variable substitution stored at `~/.config/pixelmu
 name: Blog Thumbnail
 prompt: "A cinematic {{subject}} on a dark gradient background"
 defaults:
-  model: nano-banana-2
+  model: flux-schnell
   aspect_ratio: "16:9"
 variables:
   subject: "code editor with syntax highlighting"

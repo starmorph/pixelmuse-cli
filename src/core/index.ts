@@ -14,6 +14,7 @@ export {
   slugify,
   type PromptTemplate,
 } from './prompts.js'
+export { MODELS, DEFAULT_MODEL, isModelGuard, resolveModel } from './types.js'
 export type {
   Model,
   Style,

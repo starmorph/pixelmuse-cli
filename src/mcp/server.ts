@@ -5,16 +5,7 @@ import { PixelmuseClient, CLI_VERSION } from '../core/client.js'
 import { generateImage } from '../core/generate.js'
 import { getApiKey } from '../core/auth.js'
 import { readSettings } from '../core/config.js'
-import type { Model, AspectRatio, Style, Visibility } from '../core/types.js'
-
-const MODELS = [
-  'nano-banana-2',
-  'nano-banana-pro',
-  'flux-schnell',
-  'imagen-3',
-  'recraft-v4',
-  'recraft-v4-pro',
-] as const
+import { DEFAULT_MODEL, MODELS, resolveModel, type AspectRatio, type Style, type Visibility } from '../core/types.js'
 
 const ASPECT_RATIOS = ['1:1', '16:9', '9:16', '3:2', '2:3', '4:5', '5:4', '3:4', '4:3', '21:9', '9:21'] as const
 
@@ -38,7 +29,7 @@ server.tool(
   'Generate an AI image using Pixelmuse. Returns the saved file path and generation metadata.',
   {
     prompt: z.string().describe('Image description / prompt'),
-    model: z.enum(MODELS).optional().default('nano-banana-2').describe('Model to use'),
+    model: z.enum(MODELS).optional().default(DEFAULT_MODEL).describe('Model to use'),
     aspect_ratio: z.enum(ASPECT_RATIOS).optional().default('1:1').describe('Image aspect ratio'),
     style: z.enum(STYLES).optional().default('none').describe('Visual style'),
     output_path: z.string().optional().describe('Where to save the image (default: current directory)'),
@@ -50,7 +41,7 @@ server.tool(
 
     const result = await generateImage(client, {
       prompt: args.prompt,
-      model: (args.model ?? settings.defaultModel) as Model,
+      model: resolveModel(args.model ?? settings.defaultModel),
       aspectRatio: (args.aspect_ratio ?? settings.defaultAspectRatio) as AspectRatio,
       style: (args.style ?? settings.defaultStyle) as Style,
       visibility: (args.visibility ?? settings.defaultVisibility) as Visibility,

@@ -4,11 +4,12 @@ import { PixelmuseClient } from './client.js'
 import { pollGeneration } from './polling.js'
 import { imageToBuffer, saveImage, autoSave } from './image.js'
 import { slugify } from './prompts.js'
-import type { Model, AspectRatio, Style, Visibility, Generation } from './types.js'
+import { resolveModel } from './types.js'
+import type { AspectRatio, Style, Visibility, Generation } from './types.js'
 
 export interface GenerateOptions {
   prompt: string
-  model?: Model
+  model?: string
   aspectRatio?: AspectRatio
   style?: Style
   visibility?: Visibility
@@ -52,7 +53,7 @@ export async function generateImage(
 ): Promise<GenerateResult> {
   const {
     prompt,
-    model = 'nano-banana-2',
+    model: requestedModel,
     aspectRatio = '1:1',
     style,
     visibility,
@@ -61,6 +62,7 @@ export async function generateImage(
     onProgress,
   } = options
 
+  const model = resolveModel(requestedModel)
   const start = Date.now()
 
   // Generate

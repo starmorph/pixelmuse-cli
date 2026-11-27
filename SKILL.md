@@ -42,14 +42,13 @@ If no key is found, ask the user to set `PIXELMUSE_API_KEY`. They can get one at
 
 | Model ID | Name | Credits | Provider | Best For |
 |----------|------|---------|----------|----------|
-| `nano-banana-2` | Nano Banana 2 | 1 | Gemini | Speed, text rendering, world knowledge (DEFAULT) |
+| `flux-schnell` | Flux Schnell | 1 | Replicate | Quick mockups, ideation (DEFAULT) |
 | `nano-banana-pro` | Nano Banana Pro | 4 | Gemini | Text rendering, real-time info, multi-image editing |
-| `flux-schnell` | Flux Schnell | 1 | Replicate | Quick mockups, ideation |
 | `imagen-3` | Google Imagen 3 | 1 | Gemini | Realistic photos, complex compositions |
 | `recraft-v4` | Recraft V4 | 1 | Replicate | Typography, design, composition |
 | `recraft-v4-pro` | Recraft V4 Pro | 7 | Replicate | High-res design, art direction |
 
-**Default model:** `nano-banana-2` (fast, 1 credit, good text rendering)
+**Default model:** `flux-schnell` (fast, 1 credit). Use `nano-banana-pro` when the image needs accurate text.
 
 ## Aspect Ratios
 
@@ -70,7 +69,7 @@ Optional: `realistic`, `anime`, `artistic`, `none` (default: `none`)
 
 Use `curl` via the Bash tool. **Always use `www.pixelmuse.studio`** (non-www redirects and drops the auth header).
 
-**IMPORTANT:** Gemini models (nano-banana-2, nano-banana-pro, imagen-3) return inline results. Use `Prefer: wait=55` to get synchronous responses. Replicate models (flux-schnell, recraft-v4, etc.) return async predictions that require polling.
+**IMPORTANT:** Gemini models (nano-banana-pro, imagen-3) return inline results. Use `Prefer: wait=55` to get synchronous responses. Replicate models (flux-schnell, recraft-v4, etc.) return async predictions that require polling. `nano-banana-2` is no longer a valid model.
 
 ### Synchronous (Gemini models — recommended)
 
@@ -81,7 +80,7 @@ curl -s -X POST https://www.pixelmuse.studio/api/v1/images \
   -H "Prefer: wait=55" \
   -d '{
     "prompt": "YOUR PROMPT HERE",
-    "model": "nano-banana-2",
+    "model": "imagen-3",
     "aspect_ratio": "16:9"
   }'
 ```
@@ -92,7 +91,7 @@ curl -s -X POST https://www.pixelmuse.studio/api/v1/images \
 {
   "id": "gemini_...",
   "status": "succeeded",
-  "model": "nano-banana-2",
+  "model": "imagen-3",
   "prompt": "...",
   "output": ["data:image/png;base64,..."],
   "credits_charged": 1,
@@ -113,7 +112,7 @@ curl -s -X POST https://www.pixelmuse.studio/api/v1/images \
   -H "Prefer: wait=55" \
   -d '{
     "prompt": "YOUR PROMPT HERE",
-    "model": "nano-banana-2",
+    "model": "imagen-3",
     "aspect_ratio": "16:9"
   }' | python3 -c "
 import json, sys, base64
@@ -135,7 +134,7 @@ Replace `OUTPUT_PATH.png` with the desired file path.
 
 1. **Ask user for prompt** if not provided. Help them refine it for best results.
 2. **Resolve API key** — check `$PIXELMUSE_API_KEY` env var first, fall back to `.env.local` in the current directory, then ask the user to set it.
-3. **Choose model** — default to `nano-banana-2` unless user specifies otherwise or needs specific capabilities.
+3. **Choose model** — default to `flux-schnell` unless the user specifies otherwise. Use `imagen-3` for synchronous Gemini output, or `nano-banana-pro` when the image needs rendered text.
 4. **Choose aspect ratio** based on use case (blog thumbnail = `16:9`, social = `1:1`, etc.).
 5. **Generate the image** using the curl command above.
 6. **Save to disk** using the Python extraction script.
@@ -146,7 +145,7 @@ Replace `OUTPUT_PATH.png` with the desired file path.
 
 - Be specific and descriptive. Include style, lighting, composition, and mood.
 - For blog thumbnails: include the topic visually, use dark backgrounds for dev content.
-- For text in images: Nano Banana 2 is best at rendering text accurately.
+- For text in images: Nano Banana Pro is best at rendering text accurately.
 - Avoid prompts that violate content policy (NSFW, violence, real people).
 
 ## Checking Account Balance

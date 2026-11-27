@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import { Box, Text, useApp, useInput } from 'ink'
 import { Select, TextInput } from '@inkjs/ui'
 import type { PixelmuseClient } from '../core/client.js'
-import type { Generation, Model, AspectRatio, Style, Visibility } from '../core/types.js'
+import { DEFAULT_MODEL, type Generation, type Model, type AspectRatio, type Style, type Visibility } from '../core/types.js'
 import { pollGeneration } from '../core/polling.js'
 import { imageToBuffer, autoSave } from '../core/image.js'
 import GenerationProgress from '../components/GenerationProgress.js'
@@ -10,12 +10,11 @@ import type { Route } from '../hooks/useRouter.js'
 
 type Step = 'prompt' | 'model' | 'options' | 'generating' | 'preview'
 
-const GEMINI_MODELS = new Set(['nano-banana-2', 'nano-banana-pro', 'imagen-3'])
+const GEMINI_MODELS = new Set<Model>(['nano-banana-pro', 'imagen-3'])
 
-const MODEL_OPTIONS = [
-  { label: 'Nano Banana 2 (1 credit, fast)', value: 'nano-banana-2' },
+const MODEL_OPTIONS: { label: string; value: Model }[] = [
+  { label: 'Flux Schnell (1 credit, fast)', value: 'flux-schnell' },
   { label: 'Nano Banana Pro (4 credits)', value: 'nano-banana-pro' },
-  { label: 'Flux Schnell (1 credit)', value: 'flux-schnell' },
   { label: 'Google Imagen 3 (1 credit)', value: 'imagen-3' },
   { label: 'Recraft V4 (1 credit)', value: 'recraft-v4' },
   { label: 'Recraft V4 Pro (7 credits)', value: 'recraft-v4-pro' },
@@ -58,7 +57,7 @@ export default function Generate({
   initialModel,
   initialAspectRatio,
   initialStyle,
-  defaultModel = 'nano-banana-2',
+  defaultModel = DEFAULT_MODEL,
   defaultAspectRatio = '1:1',
   defaultStyle = 'none',
   defaultVisibility = 'private',
