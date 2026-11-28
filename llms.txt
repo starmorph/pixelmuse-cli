@@ -67,13 +67,13 @@ The MCP server (`pixelmuse-mcp`) provides three tools for AI agents:
 - `list_models` — List available models with credit costs
 - `check_balance` — Check credit balance and plan info
 
-Configure in Claude Code (`~/.claude/.mcp.json`):
+Configure under `mcpServers` in Claude Code (`~/.claude.json`), Cursor (`~/.cursor/mcp.json`), or Windsurf (`~/.codeium/windsurf/mcp_config.json`):
 ```json
 {
   "mcpServers": {
     "pixelmuse": {
       "command": "npx",
-      "args": ["-y", "pixelmuse-mcp"],
+      "args": ["-y", "--package=pixelmuse", "pixelmuse-mcp"],
       "env": { "PIXELMUSE_API_KEY": "your_key" }
     }
   }

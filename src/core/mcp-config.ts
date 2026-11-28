@@ -19,31 +19,55 @@ export interface EditorInfo {
   installed: boolean
 }
 
+/**
+ * Args for `npx` that run the `pixelmuse-mcp` bin from the published `pixelmuse` package.
+ * There is no `pixelmuse-mcp` package; `npx -y pixelmuse-mcp` 404s, and a later publish of that name would be executed with the API key.
+ */
+export const MCP_SERVER_ARGS = ['-y', '--package=pixelmuse', 'pixelmuse-mcp'] as const
+
 const HOME = homedir()
 
-const EDITORS: Omit<EditorInfo, 'installed'>[] = [
+interface EditorTarget {
+  name: string
+  id: string
+  configPath: string
+  /** Path whose presence means the editor is installed. */
+  detectPath: string
+}
+
+const EDITORS: EditorTarget[] = [
   {
     name: 'Claude Code',
     id: 'claude-code',
-    configPath: join(HOME, '.claude', 'mcp.json'),
+    configPath: join(HOME, '.claude.json'),
+    detectPath: join(HOME, '.claude'),
   },
   {
     name: 'Cursor',
     id: 'cursor',
     configPath: join(HOME, '.cursor', 'mcp.json'),
+    detectPath: join(HOME, '.cursor'),
   },
   {
     name: 'Windsurf',
     id: 'windsurf',
     configPath: join(HOME, '.codeium', 'windsurf', 'mcp_config.json'),
+    detectPath: join(HOME, '.codeium', 'windsurf'),
   },
 ]
+
+/** Editor config paths the setup wizard can update. */
+export function listEditorTargets(): Array<Omit<EditorInfo, 'installed'>> {
+  return EDITORS.map(({ name, id, configPath }) => ({ name, id, configPath }))
+}
 
 /** Detect which AI editors have config directories present */
 export function detectEditors(): EditorInfo[] {
   return EDITORS.map((editor) => ({
-    ...editor,
-    installed: existsSync(dirname(editor.configPath)),
+    name: editor.name,
+    id: editor.id,
+    configPath: editor.configPath,
+    installed: existsSync(editor.detectPath) || existsSync(editor.configPath),
   }))
 }
 
@@ -51,7 +75,7 @@ export function detectEditors(): EditorInfo[] {
 export function configureMcp(editor: EditorInfo, apiKey: string): void {
   const entry: McpServerEntry = {
     command: 'npx',
-    args: ['-y', 'pixelmuse-mcp'],
+    args: [...MCP_SERVER_ARGS],
     env: { PIXELMUSE_API_KEY: apiKey },
   }
 

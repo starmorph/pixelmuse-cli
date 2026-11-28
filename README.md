@@ -123,31 +123,21 @@ pixelmuse "avatar" --no-preview --clipboard
 
 The MCP server lets AI agents generate images, list models, and check your balance — no manual CLI steps needed.
 
-**Claude Code** — add to `~/.claude/.mcp.json`:
+Add this server under `mcpServers`. `pixelmuse-mcp` is a binary of the `pixelmuse` package, not its own package name.
+
+- Claude Code (user scope): `~/.claude.json`
+- Cursor: `~/.cursor/mcp.json`
+- Windsurf: `~/.codeium/windsurf/mcp_config.json`
 
 ```json
 {
   "mcpServers": {
     "pixelmuse": {
       "command": "npx",
-      "args": ["-y", "pixelmuse-mcp"],
+      "args": ["-y", "--package=pixelmuse", "pixelmuse-mcp"],
       "env": {
         "PIXELMUSE_API_KEY": "pm_live_your_key_here"
       }
-    }
-  }
-}
-```
-
-**Cursor / Windsurf** — add to your MCP settings:
-
-```json
-{
-  "pixelmuse": {
-    "command": "npx",
-    "args": ["-y", "pixelmuse-mcp"],
-    "env": {
-      "PIXELMUSE_API_KEY": "pm_live_your_key_here"
     }
   }
 }
